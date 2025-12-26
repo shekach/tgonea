@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct Members: View {
+
+    // ✅ Correct wrapper for ObservableObject
     @StateObject private var vm = UserViewModel()
 
     var body: some View {
@@ -17,25 +19,60 @@ struct Members: View {
                     VStack(spacing: 12) {
                         Text("Error: \(error)")
                             .foregroundStyle(.red)
+
                         Button("Retry") {
                             Task { await vm.loadUsers() }
                         }
                     }
+                } else if vm.members.isEmpty {
+                    ProgressView("Loading users…")
                 } else {
-                    List(vm.names, id: \.self) { name in
-                        Text(name)
+                    List(vm.members) { member in
+                        HStack(spacing: 12) {
+
+                            // ✅ imageURL is already URL?
+                            AsyncImage(url: member.imageURL) { phase in
+                                switch phase {
+                                case .empty:
+                                    placeholder(icon: "person.crop.circle.fill")
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFit()
+                                case .failure:
+                                    placeholder(icon: "person.crop.circle.badge.exclam")
+                                @unknown default:
+                                    Color.clear
+                                }
+                            }
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                            Text(member.name)
+                                .font(.body)
+                        }
                     }
                 }
             }
             .navigationTitle("Users")
             .task {
-                // Choose one:
-                await vm.loadUsers()         // One-time fetch
-                 //vm.startRealtimeUpdates()  // Or live updates
+                // Choose ONE:
+                await vm.loadUsers()      // one-time fetch
+                // vm.realtimeUpdates()   // live Firestore updates
             }
             .refreshable {
                 await vm.loadUsers()
             }
+        }
+    }
+
+    // MARK: - Placeholder
+    private func placeholder(icon: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.15))
+            Image(systemName: icon)
+                .foregroundStyle(.secondary)
         }
     }
 }
