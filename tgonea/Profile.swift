@@ -10,14 +10,19 @@ import UIKit
 import FirebaseFirestore
 import FirebaseStorage
 import PhotosUI
+ 
+
 
 struct Profile: View {
     @State var name: String = ""
     @FocusState private var isFocused: Bool
+    @State var phoneNumber: String = ""
+    @State var department: String = ""
 
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImageData: Data? = nil
-    
+    @StateObject private var vm = UserViewModel()
+    @State private var selectedName: String = ""
     var body: some View {
         VStack(spacing:20){
             HStack{
@@ -32,6 +37,50 @@ struct Profile: View {
                     .background(.ultraThinMaterial)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(.gray.opacity(0.3)))
             }
+            HStack{
+                Text("Phone Number:")
+                TextField("Phone Number",text:$phoneNumber)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                    .accessibilityLabel("phone number")
+                    .foregroundStyle(.cyan)
+                    .keyboardType(.phonePad)
+                    .onChange(of: phoneNumber) { _, newValue in
+                        phoneNumber = newValue.filter { $0.isNumber }
+                            .prefix(10)
+                            .description
+                    }
+
+            }
+            HStack{
+                Text("Department:")
+                if vm.department.isEmpty{
+                    ProgressView("Loading..")
+                } else {
+                    Picker("Select department",selection:$department) {
+                        Text("Select").tag("")
+                        
+                        ForEach(vm.department,id:\.self) { name in
+                            Text(department).tag(department)
+                            
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                if !selectedName.isEmpty {
+                               Text("Selected: \(selectedName)")
+                                   .font(.subheadline.bold())
+                           }
+                if let error = vm.errorMessage {
+                                Text(error)
+                                    .foregroundStyle(.red)
+                            }
+            }
+            .padding()
+                    .task {
+                        await vm.fetchDepartment()
+                    }
 
             PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
                 HStack(spacing: 12) {
@@ -91,6 +140,8 @@ struct Profile: View {
                 } else {
                     // No image selected, just save the name
                     db.collection("users").addDocument(data: ["name": name])
+                    db.collection("users").addDocument(data: ["Phone Number": phoneNumber])
+                    db.collection("users").addDocument(data: ["department": department])
                 }
             }
             .buttonStyle(.borderedProminent)

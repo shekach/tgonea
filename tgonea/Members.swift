@@ -28,29 +28,49 @@ struct Members: View {
                     ProgressView("Loading users…")
                 } else {
                     List(vm.members) { member in
-                        HStack(spacing: 12) {
-
-                            // ✅ imageURL is already URL?
-                            AsyncImage(url: member.imageURL) { phase in
-                                switch phase {
-                                case .empty:
-                                    placeholder(icon: "person.crop.circle.fill")
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFit()
-                                case .failure:
-                                    placeholder(icon: "person.crop.circle.badge.exclam")
-                                @unknown default:
-                                    Color.clear
+                    
+                            
+                            HStack(spacing: 1) {
+                                
+                                // ✅ imageURL is already URL?
+                                AsyncImage(url: member.imageURL) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        placeholder(icon: "person.crop.circle.fill")
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFit()
+                                    case .failure:
+                                        placeholder(icon: "person.crop.circle.badge.exclam")
+                                    @unknown default:
+                                        Color.clear
+                                    }
+                                }
+                                .frame(width: 100, height: 100)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                VStack(alignment: .leading, spacing: 5) {
+                                    
+                                    
+                                    HStack{
+                                        Text("Name")
+                                        Text(member.name)
+                                            .font(.body)
+                                    }
+                                    HStack(alignment: .center,spacing: 10){
+                                        Text("Phone Number:")
+                                        Text( member.phoneNumber)
+                                            .font(.subheadline.bold())
+                                    }
+                                    HStack{
+                                        Text("Department")
+                                        Text(member.department)
+                                            .font(.subheadline)
+                                    }
                                 }
                             }
-                            .frame(width: 100, height: 100)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                            Text(member.name)
-                                .font(.body)
-                        }
+                            
+                        
                     }
                 }
             }
