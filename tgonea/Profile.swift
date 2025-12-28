@@ -61,26 +61,23 @@ struct Profile: View {
                     Picker("Select department",selection:$department) {
                         Text("Select").tag("")
                         
-                        ForEach(vm.department,id:\.self) { name in
-                            Text(department).tag(department)
+                        ForEach(vm.department, id: \.self) { name in
+                            Text(name).tag(name)
                             
                         }
                     }
-                    .pickerStyle(.menu)
+                    .pickerStyle(.wheel)
                 }
-                if !selectedName.isEmpty {
-                               Text("Selected: \(selectedName)")
-                                   .font(.subheadline.bold())
-                           }
+                if !department.isEmpty {
+                    Text("Selected: \(department)")
+                        .font(.subheadline.bold())
+                }
                 if let error = vm.errorMessage {
-                                Text(error)
-                                    .foregroundStyle(.red)
-                            }
+                    Text(error)
+                        .foregroundStyle(.red)
+                }
             }
             .padding()
-                    .task {
-                        await vm.fetchDepartment()
-                    }
 
             PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
                 HStack(spacing: 12) {
@@ -129,19 +126,27 @@ struct Profile: View {
                                 let urlString = url?.absoluteString ?? ""
                                 db.collection("users").addDocument(data: [
                                     "name": name,
+                                    "phoneNumber": phoneNumber,
+                                    "department": department,
                                     "photoURL": urlString
                                 ])
                             }
                         } else {
-                            // If upload fails, still save the name
-                            db.collection("users").addDocument(data: ["name": name])
+                            // If upload fails, still save all fields without photoURL
+                            db.collection("users").addDocument(data: [
+                                "name": name,
+                                "phoneNumber": phoneNumber,
+                                "department": department
+                            ])
                         }
                     }
                 } else {
-                    // No image selected, just save the name
-                    db.collection("users").addDocument(data: ["name": name])
-                    db.collection("users").addDocument(data: ["Phone Number": phoneNumber])
-                    db.collection("users").addDocument(data: ["department": department])
+                    // No image selected, save all fields together
+                    db.collection("users").addDocument(data: [
+                        "name": name,
+                        "phoneNumber": phoneNumber,
+                        "department": department
+                    ])
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -152,6 +157,9 @@ struct Profile: View {
             .accessibilityLabel("Submit")
         }
         .padding()
+        .task {
+            await vm.fetchDepartment()
+        }
     }
 }
 

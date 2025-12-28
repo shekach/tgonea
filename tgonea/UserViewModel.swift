@@ -29,11 +29,15 @@ final class UserViewModel: ObservableObject {
     func fetchDepartment() async {
         do {
             let snapshot = try await db.collection("department").getDocuments()
-            department = snapshot.documents.compactMap {
-                $0.get("department") as? String
+            let names = snapshot.documents.compactMap { doc -> String? in
+                if let value = doc.get("department") as? String { return value }
+                if let value = doc.get("name") as? String { return value }
+                return nil
             }
+            self.department = names
+            self.errorMessage = nil
         } catch {
-            errorMessage = error.localizedDescription
+            self.errorMessage = error.localizedDescription
         }
     }
     func loadUsers() async {
@@ -75,4 +79,3 @@ final class UserViewModel: ObservableObject {
 //    }
     
 }
-
