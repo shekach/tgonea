@@ -54,11 +54,18 @@ struct Profile: View {
                     }
 
             }
-         HStack {
-          Text("Date of Birth as per service book")
-          DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
-            .padding()
-         }
+        HStack {
+    Text("Date of Birth as per service book")
+        .font(.subheadline)
+
+    DatePicker(
+        "",
+        selection: $dob,
+        displayedComponents: [.date]
+    )
+    .labelsHidden()
+}
+
             HStack{
                 Text("Department:")
                 if vm.department.isEmpty{
