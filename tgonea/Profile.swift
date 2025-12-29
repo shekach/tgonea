@@ -142,9 +142,10 @@ struct Profile: View {
                             db.collection("users").addDocument(data: [
                                 "name": name,
                                 "phoneNumber": phoneNumber,
-                                "department": department
+                                "department": department,
+                             "dob":dob
                             ])
-                        }
+                        } 
                     }
                 } else {
                     // No image selected, save all fields together
