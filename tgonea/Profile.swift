@@ -18,6 +18,7 @@ struct Profile: View {
     @FocusState private var isFocused: Bool
     @State var phoneNumber: String = ""
     @State var department: String = ""
+    @State private var dob = Date()
 
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImageData: Data? = nil
@@ -53,6 +54,11 @@ struct Profile: View {
                     }
 
             }
+         HStack {
+          Text("Date of Birth as per service book")
+          DatePicker("Pick a date", selection: $date, displayedComponents: [.date])
+            .padding()
+         }
             HStack{
                 Text("Department:")
                 if vm.department.isEmpty{
