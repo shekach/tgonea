@@ -18,6 +18,7 @@ final class UserViewModel: ObservableObject {
         let phoneNumber: String
         let department: String
         let imageURL: URL?
+        let dob: String
         
     }
 
@@ -32,6 +33,7 @@ final class UserViewModel: ObservableObject {
             let names = snapshot.documents.compactMap { doc -> String? in
                 if let value = doc.get("department") as? String { return value }
                 if let value = doc.get("name") as? String { return value }
+                                                       
                 return nil
             }
             self.department = names
@@ -46,13 +48,14 @@ final class UserViewModel: ObservableObject {
             let fetched: [Member] = snapshot.documents.map { doc in
                 let name = (doc.get("name") as? String) ?? ""
                 let phoneNumber = (doc.get("phoneNumber") as? String) ?? ""
+                  let dob = (doc.get("dob") as? String) ?? ""                                          
                 let department = (doc.get("department") as? String) ?? ""
                 // Try common keys for image url. Prefer `imageURL`, fall back to `photoURL` or `avatarURL`.
                 let imageURLString = (doc.get("imageURL") as? String)
                     ?? (doc.get("photoURL") as? String)
                     ?? (doc.get("avatarURL") as? String)
                 let url = imageURLString.flatMap { URL(string: $0) }
-                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber,department: department, imageURL: url)
+                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber,dob: dob , department: department, imageURL: url)
             }
             self.members = fetched
         } catch {
