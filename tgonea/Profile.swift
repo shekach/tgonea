@@ -120,49 +120,46 @@ struct Profile: View {
                     }
                 }
             }
+Button("Submit") {
+    let db = Firestore.firestore()
 
-            Button("Submit"){
-                let db = Firestore.firestore()
-                
-                if let imageData = selectedImageData {
-                    let storage = Storage.storage()
-                    let storageRef = storage.reference()
-                    let fileName = UUID().uuidString + ".jpg"
-                    let imagesRef = storageRef.child("profileImages/\(fileName)")
-                    
-                    let metadata = StorageMetadata()
-                    metadata.contentType = "image/jpeg"
-                    
-                    imagesRef.putData(imageData, metadata: metadata) { _, error in
-                        if error == nil {
-                            imagesRef.downloadURL { url, _ in
-                                let urlString = url?.absoluteString ?? ""
-                                db.collection("users").addDocument(data: [
-                                    "name": name,
-                                    "phoneNumber": phoneNumber,
-                                    "department": department,
-                                    "photoURL": urlString
-                                ])
-                            }
-                        } else {
-                            // If upload fails, still save all fields without photoURL
-                            db.collection("users").addDocument(data: [
-                                "name": name,
-                                "phoneNumber": phoneNumber,
-                                "department": department,
-                             "dob":dob
-                            ])
-                        } 
-                    }
-                } else {
-                    // No image selected, save all fields together
-                    db.collection("users").addDocument(data: [
-                        "name": name,
-                        "phoneNumber": phoneNumber,
-                        "department": department
-                    ])
+    func saveUser(photoURL: String? = nil) {
+        var data: [String: Any] = [
+            "name": name,
+            "phoneNumber": phoneNumber,
+            "department": department,
+            "dob": dob,
+            "createdAt": Timestamp()
+        ]
+
+        if let photoURL {
+            data["photoURL"] = photoURL
+        }
+
+        db.collection("users").addDocument(data: data)
+    }
+
+    if let imageData = selectedImageData {
+        let storage = Storage.storage()
+        let fileName = UUID().uuidString + ".jpg"
+        let imagesRef = storage.reference().child("profileImages/\(fileName)")
+
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+
+        imagesRef.putData(imageData, metadata: metadata) { _, error in
+            if error == nil {
+                imagesRef.downloadURL { url, _ in
+                    saveUser(photoURL: url?.absoluteString)
                 }
+            } else {
+                saveUser()
             }
+        }
+    } else {
+        saveUser()
+    }
+}
             .buttonStyle(.borderedProminent)
             .tint(.blue)
             .controlSize(.large)
