@@ -48,14 +48,30 @@ final class UserViewModel: ObservableObject {
             let fetched: [Member] = snapshot.documents.map { doc in
                 let name = (doc.get("name") as? String) ?? ""
                 let phoneNumber = (doc.get("phoneNumber") as? String) ?? ""
-                  let dob = (doc.get("dob") as? String) ?? ""                                          
+                let dobDisplay: String
+                if let ts = doc.get("dob") as? Timestamp {
+                    let date = ts.dateValue()
+                    let formatter = DateFormatter()
+                    formatter.dateStyle = .medium
+                    formatter.timeStyle = .none
+                    dobDisplay = formatter.string(from: date)
+                } else if let date = doc.get("dob") as? Date {
+                    let formatter = DateFormatter()
+                    formatter.dateStyle = .medium
+                    formatter.timeStyle = .none
+                    dobDisplay = formatter.string(from: date)
+                } else if let s = doc.get("dob") as? String {
+                    dobDisplay = s
+                } else {
+                    dobDisplay = ""
+                }
                 let department = (doc.get("department") as? String) ?? ""
                 // Try common keys for image url. Prefer `imageURL`, fall back to `photoURL` or `avatarURL`.
                 let imageURLString = (doc.get("imageURL") as? String)
                     ?? (doc.get("photoURL") as? String)
                     ?? (doc.get("avatarURL") as? String)
                 let url = imageURLString.flatMap { URL(string: $0) }
-                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber,dob: dob , department: department, imageURL: url)
+                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber, department: department, imageURL: url, dob: dobDisplay)
             }
             self.members = fetched
         } catch {
