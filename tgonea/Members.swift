@@ -57,6 +57,11 @@ struct Members: View {
                                         Text(member.name)
                                             .font(.body)
                                     }
+                                    HStack{
+                                        Text("Qualifications:")
+                                        Text(member.qualifications)
+                                        .font(.subheadline.bold())
+                                    }
                                     HStack(alignment: .center,spacing: 10){
                                         Text("Phone Number:")
                                         Text( member.phoneNumber)
