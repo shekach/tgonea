@@ -73,7 +73,7 @@ final class UserViewModel: ObservableObject {
                     ?? (doc.get("photoURL") as? String)
                     ?? (doc.get("avatarURL") as? String)
                 let url = imageURLString.flatMap { URL(string: $0) }
-                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber, department: department,qualifications: qualifications, imageURL: url, dob: dobDisplay)
+                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber, department: department, imageURL: url, dob: dobDisplay, qualifications: qualifications)
             }
             self.members = fetched
         } catch {
