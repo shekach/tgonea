@@ -177,6 +177,14 @@ Button("Submit") {
             await vm.fetchDepartment()
         }
     }
+ .disabled(
+    name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+    phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+    department.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+   dob.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+   qualifications.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+)
+
 }
 
 #Preview {
