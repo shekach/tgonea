@@ -19,6 +19,7 @@ struct Profile: View {
     @State var phoneNumber: String = ""
     @State var department: String = ""
     @State private var dob = Date()
+    @State var qualifications: String = ""
 
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImageData: Data? = nil
@@ -65,7 +66,10 @@ struct Profile: View {
     )
     .labelsHidden()
 }
-
+HStack {
+ Text("Qualifications:")
+ TextField("Qualifications",text:$qualifications)
+}
             HStack{
                 Text("Department:")
                 if vm.department.isEmpty{
@@ -129,7 +133,8 @@ Button("Submit") {
             "phoneNumber": phoneNumber,
             "department": department,
             "dob": dob,
-            "createdAt": Timestamp()
+            "createdAt": Timestamp(),
+         "qualifications":qualifications
         ]
 
         if let photoURL {
