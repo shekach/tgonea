@@ -19,6 +19,7 @@ final class UserViewModel: ObservableObject {
         let department: String
         let imageURL: URL?
         let dob: String
+        let qualifications: String
         
     }
 
@@ -47,6 +48,7 @@ final class UserViewModel: ObservableObject {
             let snapshot = try await db.collection("users").getDocuments()
             let fetched: [Member] = snapshot.documents.map { doc in
                 let name = (doc.get("name") as? String) ?? ""
+                let qualifications = (doc.get("qualifications") as? String) ?? ""
                 let phoneNumber = (doc.get("phoneNumber") as? String) ?? ""
                 let dobDisplay: String
                 if let ts = doc.get("dob") as? Timestamp {
@@ -71,7 +73,7 @@ final class UserViewModel: ObservableObject {
                     ?? (doc.get("photoURL") as? String)
                     ?? (doc.get("avatarURL") as? String)
                 let url = imageURLString.flatMap { URL(string: $0) }
-                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber, department: department, imageURL: url, dob: dobDisplay)
+                return Member(id: doc.documentID, name: name, phoneNumber: phoneNumber, department: department,qualifications: qualifications, imageURL: url, dob: dobDisplay)
             }
             self.members = fetched
         } catch {
