@@ -26,6 +26,8 @@ struct Profile: View {
     @StateObject private var vm = UserViewModel()
     @State private var selectedName: String = ""
     var body: some View {
+     Form{
+      Section ("Personal information") {
         VStack(spacing:20){
             HStack{
                 Text("Name:")
@@ -124,6 +126,8 @@ HStack {
                     }
                 }
             }
+        }
+       Section {
 Button("Submit") {
     let db = Firestore.firestore()
 
@@ -176,9 +180,10 @@ Button("Submit") {
         .task {
             await vm.fetchDepartment()
         }
+      }
     }
  
-
+    }
 }
 
 #Preview {
