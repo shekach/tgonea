@@ -1,3 +1,5 @@
+
+
 //
 //  Events.swift
 //  tgonea
@@ -8,11 +10,45 @@
 import SwiftUI
 
 struct Events: View {
+    @StateObject private var vm = UserViewModel()
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List {
+            Section("Persons Retiring This Year") {
+                if vm.members.isEmpty {
+                    Text("No retirements found this year.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(vm.members) { member in
+                        VStack(alignment: .leading) {
+                            Text(member.name)
+                                .font(.headline)
+                            Text(member.department)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Events")
+        .task {
+            await vm.loadRetiringThisYear()
+        }
+        .overlay(alignment: .bottom) {
+            if let error = vm.errorMessage {
+                Text(error)
+                    .padding()
+                    .background(.red.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding()
+            }
+        }
     }
 }
 
 #Preview {
-    Events()
+    NavigationStack {
+        Events()
+    }
 }
