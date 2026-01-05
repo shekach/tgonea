@@ -13,12 +13,15 @@ import UIKit
 
 struct Profile: View {
 
+    // MARK: - Form Fields
     @State private var name: String = ""
     @State private var phoneNumber: String = ""
     @State private var department: String = ""
     @State private var dob: Date = Date()
     @State private var qualifications: String = ""
 
+    // MARK: - UI State
+    @State private var showAlert = false
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
 
@@ -40,7 +43,9 @@ struct Profile: View {
                     .keyboardType(.numberPad)
                     .textFieldStyle(.roundedBorder)
                     .onChange(of: phoneNumber) { _, newValue in
-                        phoneNumber = String(newValue.filter { $0.isNumber }.prefix(10))
+                        phoneNumber = String(
+                            newValue.filter { $0.isNumber }.prefix(10)
+                        )
                     }
 
                 DatePicker(
@@ -70,6 +75,7 @@ struct Profile: View {
             Section("Profile Photo") {
                 PhotosPicker(selection: $selectedItem, matching: .images) {
                     HStack(spacing: 12) {
+
                         if let data = selectedImageData,
                            let image = UIImage(data: data) {
                             Image(uiImage: image)
@@ -90,7 +96,8 @@ struct Profile: View {
                 }
                 .onChange(of: selectedItem) { _, newItem in
                     Task {
-                        if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                        if let data = try? await newItem?
+                            .loadTransferable(type: Data.self) {
                             selectedImageData = data
                         }
                     }
@@ -105,6 +112,12 @@ struct Profile: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(!isFormValid)
             }
+        }
+        // ✅ ALERT ATTACHED TO FORM (CORRECT)
+        .alert("Application Submitted", isPresented: $showAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Your application has been submitted successfully.")
         }
         .navigationTitle("Profile")
         .task {
@@ -122,12 +135,17 @@ struct Profile: View {
 
     // MARK: - Submit Profile
     private func submitProfile() {
+
         let db = Firestore.firestore()
-        
-        // Retirement at 61 years from DOB
-        let retirementDate: Date = Calendar.current.date(byAdding: DateComponents(year: 61), to: dob) ?? dob
+
+        let retirementDate = Calendar.current.date(
+            byAdding: .year,
+            value: 61,
+            to: dob
+        ) ?? dob
 
         func saveUser(photoURL: String? = nil) {
+
             var data: [String: Any] = [
                 "name": name,
                 "phoneNumber": phoneNumber,
@@ -142,13 +160,19 @@ struct Profile: View {
                 data["photoURL"] = photoURL
             }
 
-            db.collection("users").addDocument(data: data)
+            db.collection("users").addDocument(data: data) { _, _ in
+                DispatchQueue.main.async {
+                    showAlert = true   // ✅ ALERT FIRES HERE
+                }
+            }
         }
 
+        // MARK: - Upload Photo if Selected
         if let imageData = selectedImageData {
-            let storage = Storage.storage()
-            let fileName = UUID().uuidString + ".jpg"
-            let ref = storage.reference().child("profileImages/\(fileName)")
+
+            let ref = Storage.storage()
+                .reference()
+                .child("profileImages/\(UUID().uuidString).jpg")
 
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
