@@ -160,7 +160,11 @@ struct Profile: View {
                 data["photoURL"] = photoURL
             }
 
-            db.collection("users").addDocument(data: data) { _, _ in
+            db.collection("users").addDocument(data: data) { error in
+                // Log error if any (optional)
+                if let error = error {
+                    print("Failed to add user document: \(error.localizedDescription)")
+                }
                 DispatchQueue.main.async {
                     showAlert = true   // ✅ ALERT FIRES HERE
                 }
