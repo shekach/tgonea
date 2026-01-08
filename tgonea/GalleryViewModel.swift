@@ -7,7 +7,7 @@ import Foundation
 import FirebaseFirestore
 import SwiftUI
 import Combine
-
+import FirebaseStorage
 struct GalleryItem: Identifiable, Equatable {
     let id: String
     let imageURL: URL

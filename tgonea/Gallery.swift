@@ -7,9 +7,11 @@
 
 import SwiftUI
 import FirebaseFirestore
+import FirebaseStorage
 
 struct Gallery: View {
     @StateObject private var vm = GalleryViewModel()
+    @State private var expandedItem: GalleryItem? = nil
     
     var body: some View {
         NavigationStack {
@@ -24,22 +26,25 @@ struct Gallery: View {
                         LazyVStack(spacing: 20) {
                             ForEach(vm.items) { item in
                                 VStack(alignment: .leading, spacing: 8) {
-                                    AsyncImage(url: item.imageURL) { phase in
-                                        switch phase {
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .scaledToFit()
-                                        case .failure:
-                                            Color.gray
-                                                .aspectRatio(1, contentMode: .fit)
-                                                .overlay(Text("Failed to load"))
-                                        default:
-                                            ProgressView()
+                                    Button(action: { expandedItem = item }) {
+                                        AsyncImage(url: item.imageURL) { phase in
+                                            switch phase {
+                                            case .success(let image):
+                                                image
+                                                    .resizable()
+                                                    .scaledToFit()
+                                            case .failure:
+                                                Color.gray
+                                                    .aspectRatio(1, contentMode: .fit)
+                                                    .overlay(Text("Failed to load"))
+                                            default:
+                                                ProgressView()
+                                            }
                                         }
+                                        .frame(maxWidth: 400, maxHeight: 200)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
                                     }
-                                    .frame(maxWidth: .infinity, maxHeight: 300)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .buttonStyle(.plain)
                                     
                                     Text(item.description)
                                         .font(.body)
@@ -54,6 +59,43 @@ struct Gallery: View {
             .navigationTitle("Gallery")
             .task {
                 await vm.fetchGalleryItems()
+            }
+            .sheet(item: $expandedItem) { item in
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    VStack {
+                        AsyncImage(url: item.imageURL) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            case .failure:
+                                Color.gray
+                                    .aspectRatio(1, contentMode: .fit)
+                                    .overlay(Text("Failed to load"))
+                            default:
+                                ProgressView()
+                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.black)
+                        .padding()
+
+                        Text(item.description)
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .padding()
+
+                        Button("Close") {
+                            expandedItem = nil
+                        }
+                        .padding()
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(Capsule())
+                        .foregroundColor(.white)
+                    }
+                }
             }
         }
     }
