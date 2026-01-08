@@ -11,8 +11,9 @@ import SwiftUI
 
 struct Events: View {
     @StateObject private var vm = UserViewModel()
-
+    
     var body: some View {
+        
         List {
             Section("Persons Retiring This Year") {
                 if vm.members.isEmpty {
@@ -30,7 +31,9 @@ struct Events: View {
                     }
                 }
             }
+            
         }
+        
         .navigationTitle("Events")
         .task {
             await vm.loadRetiringThisYear()

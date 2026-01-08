@@ -8,31 +8,42 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        TabView {
-           HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
-               }
-           Members()
-               .tabItem {
-                    Label("Members", systemImage: "person.2.fill")
-                }
-            Events()
-                .tabItem {
+    
+        var body: some View {
+            
+                TabView {
+                    HomeView()
+                        .tabItem {
+                            Label("Home", systemImage: "house.fill")
+                        }
+                    Members()
+                        .tabItem {
+                            Label("Members", systemImage: "person.2.fill")
+                        }
+                    Events()
+                        .tabItem {
                             Label("Events", systemImage: "calendar")
                         }
-            News()
-                .tabItem {
+                    News()
+                        .tabItem {
                             Label("News", systemImage: "newspaper.fill")
                         }
-            Profile()
-                .tabItem {
+                    Profile()
+                        .tabItem {
                             Label("Profile", systemImage: "person.fill")
                         }
                 }
+               .background(
+                   Image("bg")
+                       .resizable()
+                       .scaledToFill()
+                       .ignoresSafeArea()
+               )
+            }
+            
         }
-    }
+    
+    
 
 
 #Preview {

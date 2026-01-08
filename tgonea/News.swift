@@ -9,7 +9,13 @@ import SwiftUI
 
 struct News: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            Image("thanmayi")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 1000 ,height: 1000 ,alignment: .center)
+            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        }
     }
 }
 
