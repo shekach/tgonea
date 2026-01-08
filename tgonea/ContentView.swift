@@ -24,9 +24,9 @@ struct ContentView: View {
                         .tabItem {
                             Label("Events", systemImage: "calendar")
                         }
-                    News()
+                    Gallery()
                         .tabItem {
-                            Label("News", systemImage: "newspaper.fill")
+                            Label("Gallery", systemImage: "photo.fill")
                         }
                     Profile()
                         .tabItem {
