@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import Combine
 
 struct HomeView: View {
+
+    @StateObject private var vm = UserViewModel()
 
     // MARK: - Animation State
     @State private var showCards = false
@@ -53,7 +56,7 @@ struct HomeView: View {
                     homeCard(
                         icon: "person.3.fill",
                         title: "Members",
-                        subtitle: "Association members list"
+                        subtitle: "Association members list: (\(vm.members.count)) enrolled"
                     )
 
                     homeCard(
@@ -68,6 +71,9 @@ struct HomeView: View {
         }
         .onAppear {
             showCards = true
+            if vm.members.isEmpty {
+                Task { await vm.loadUsers() }
+            }
         }
         .navigationTitle("Home")
         .navigationBarTitleDisplayMode(.inline)
@@ -99,7 +105,7 @@ struct HomeView: View {
 
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.cyan)
                 }
             )
 
@@ -119,4 +125,3 @@ struct HomeView: View {
         HomeView()
     }
 }
-

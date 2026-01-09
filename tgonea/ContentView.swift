@@ -28,6 +28,10 @@ struct ContentView: View {
                         .tabItem {
                             Label("Gallery", systemImage: "photo.fill")
                         }
+                    Documents()
+                        .tabItem {
+                            Label("Documents", systemImage: "paperplane.fill")
+                        }
                     Profile()
                         .tabItem {
                             Label("Profile", systemImage: "person.fill")
