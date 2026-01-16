@@ -45,18 +45,21 @@ struct HomeView: View {
                         icon: "person.crop.circle.fill",
                         title: "Profile",
                         subtitle: "View & update details"
+                        destination: Profile()
                     )
 
                     homeCard(
                         icon: "megaphone.fill",
                         title: "Announcements",
                         subtitle: "Latest circulars & updates"
+                        destination: Documents()
                     )
 
                     homeCard(
                         icon: "person.3.fill",
                         title: "Members",
                         subtitle: "Association members list: (\(vm.members.count)) enrolled"
+                        destination: Members()
                     )
 
                     homeCard(
@@ -81,12 +84,15 @@ struct HomeView: View {
 
     // MARK: - Reusable Home Card
     @ViewBuilder
-    private func homeCard(
+    private func homeCard<Destination: View> (
         icon: String,
         title: String,
-        subtitle: String
+        subtitle: String,
+        destination: Destination
     ) -> some View {
-
+       NavigationLink {
+           destination
+       } label:{
         RoundedRectangle(cornerRadius: 18)
             .fill(Color.white)
             .frame(height: 140)
@@ -116,8 +122,9 @@ struct HomeView: View {
             .animation(
                 .easeOut(duration: 0.6),
                 value: showCards
-            )
+            
     }
+    .buttonStyle(.plain)
 }
 
 #Preview {
