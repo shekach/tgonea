@@ -16,9 +16,9 @@ struct ContentView: View {
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
                         }
-                    Members()
+                    Association()
                         .tabItem {
-                            Label("Members", systemImage: "person.2.fill")
+                            Label("Members", systemImage: "person.3.fill")
                         }
                     Events()
                         .tabItem {
@@ -28,14 +28,7 @@ struct ContentView: View {
                         .tabItem {
                             Label("Gallery", systemImage: "photo.fill")
                         }
-                    Documents()
-                        .tabItem {
-                            Label("Documents", systemImage: "paperplane.fill")
-                        }
-                    Profile()
-                        .tabItem {
-                            Label("Profile", systemImage: "person.fill")
-                        }
+                  
                 }
                .background(
                    Image("bg")
