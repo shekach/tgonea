@@ -44,7 +44,7 @@ struct Members: View {
                     }
                 }
             }
-            .navigationTitle("Users")
+            .navigationTitle("Members")
             .task {
                 if vm.members.isEmpty {
                     await vm.loadUsers()
