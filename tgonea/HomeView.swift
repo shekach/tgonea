@@ -45,13 +45,13 @@ struct HomeView: View {
                         icon: "person.crop.circle.fill",
                         title: "Profile",
                         subtitle: "View & update details",
-                        background: RadialGradient(gradient: Gradient(colors: [Color.pink.opacity(0.55), Color.red.opacity(0.30)]), center: .center, startRadius: 10, endRadius: 220),
+                        background: RadialGradient(gradient: Gradient(colors: [Color.blue.opacity(0.55), Color.red.opacity(0.30)]), center: .center, startRadius: 10, endRadius: 220),
                         destination: Profile()
                     )
 
                     homeCard(
-                        icon: "megaphone.fill",
-                        title: "Announcements",
+                        icon: "folder.fill",
+                        title: "Circulars and G.O.s",
                         subtitle: "Latest circulars & updates",
                         background: RadialGradient(gradient: Gradient(colors: [Color.cyan.opacity(0.55), Color.blue.opacity(0.30)]), center: .center, startRadius: 10, endRadius: 220),
                         destination: Documents()
