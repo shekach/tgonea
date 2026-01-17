@@ -18,7 +18,7 @@ struct ContentView: View {
                     }
                 Association()
                     .tabItem {
-                        Label("Members", systemImage: "person.3.fill")
+                        Label("Association", systemImage: "person.3.fill")
                     }
                 Events()
                     .tabItem {
