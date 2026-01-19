@@ -33,8 +33,15 @@ struct Documents: View {
         .onAppear {
             vm.fetchDocuments()
         }
-        .sheet(item: $selectedPdfUrl) { url in
-            PdfViewer(url: url)
+        .sheet(isPresented: .constant(selectedPdfUrl != nil), onDismiss: {
+            // Optionally clear the selection when the sheet is dismissed
+            selectedPdfUrl = nil
+        }) {
+            if let url = selectedPdfUrl {
+                PdfViewer(url: url)
+            } else {
+                Text("No document selected")
+            }
         }
     }
 }
