@@ -166,6 +166,7 @@ struct Profile: View {
                     print("Failed to add user document: \(error.localizedDescription)")
                 }
                 DispatchQueue.main.async {
+                    resetForm()
                     showAlert = true   // ✅ ALERT FIRES HERE
                 }
             }
@@ -193,6 +194,18 @@ struct Profile: View {
         } else {
             saveUser()
         }
+    }
+
+    // MARK: - Reset Form
+    private func resetForm() {
+        name = ""
+        phoneNumber = ""
+        department = ""
+        dob = Date()
+        qualifications = ""
+        selectedItem = nil
+        selectedImageData = nil
+        isFocused = false
     }
 }
 

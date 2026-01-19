@@ -26,29 +26,21 @@ struct Association: View {
                         LazyVStack(spacing: 20) {
                             ForEach(vm.items) { item in
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Button(action: { expandedItem = item }) {
-                                        AsyncImage(url: item.imageURL) { phase in
-                                            switch phase {
-                                            case .success(let image):
-                                                image
-                                                    .resizable()
-                                                    .scaledToFit()
-                                            case .failure:
-                                                Color.gray
-                                                    .aspectRatio(1, contentMode: .fit)
-                                                    .overlay(Text("Failed to load"))
-                                            default:
-                                                ProgressView()
-                                            }
+                                    ScrollView(.vertical, showsIndicators: false) {
+                                        
+                                        
+                                        Button(action: { expandedItem = item }) {
+                                            CachedAsyncImage(url: item.imageURL, contentMode: .fit, cornerRadius: 12)
+                                                .frame(width: 400, height: 200, alignment: .center)
                                         }
-                                        .frame(maxWidth: 400, maxHeight: 200)
-                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        .buttonStyle(.plain)
+                                        
+                                        Text(item.description)
+                                            .font(.largeTitle)
+                                            .padding(.trailing, 8)
+                                            .frame(width:200,height:100,alignment: .center)
+                                            .clipShape(RoundedRectangle(cornerRadius: 12))
                                     }
-                                    .buttonStyle(.plain)
-                                    
-                                    Text(item.description)
-                                        .font(.body)
-                                        .padding(.bottom, 8)
                                 }
                                 .padding(.horizontal)
                             }
@@ -64,23 +56,10 @@ struct Association: View {
                 ZStack {
                     Color.black.ignoresSafeArea()
                     VStack {
-                        AsyncImage(url: item.imageURL) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                            case .failure:
-                                Color.gray
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .overlay(Text("Failed to load"))
-                            default:
-                                ProgressView()
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.black)
-                        .padding()
+                        CachedAsyncImage(url: item.imageURL, contentMode: .fit, cornerRadius: 12)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color.black)
+                            .padding()
 
                         Text(item.description)
                             .font(.title2)
@@ -106,3 +85,4 @@ struct Association: View {
 #Preview {
     Association()
 }
+
