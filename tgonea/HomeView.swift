@@ -70,7 +70,7 @@ struct HomeView: View {
                         title: "Contact",
                         subtitle: "Reach the association",
                         background: RadialGradient(gradient: Gradient(colors: [Color.orange.opacity(0.55), Color.yellow.opacity(0.30)]), center: .center, startRadius: 10, endRadius: 220),
-                        destination:Association()
+                        destination:Contact()
                     )
 
                 }
