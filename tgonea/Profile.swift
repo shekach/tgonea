@@ -19,6 +19,7 @@ struct Profile: View {
     @State private var department: String = ""
     @State private var dob: Date = Date()
     @State private var qualifications: String = ""
+    @State private var initialAppointmentYear: String = ""
 
     // MARK: - UI State
     @State private var showAlert = false
@@ -62,6 +63,17 @@ struct Profile: View {
                     ProgressView("Loading departments…")
                 } else {
                     Picker("Department", selection: $department) {
+                        Text("Select").tag("")
+                        ForEach(vm.department, id: \.self) { dept in
+                            Text(dept).tag(dept)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                     // MARK: - appoinment year Picker
+                if vm.department.isEmpty {
+                    ProgressView("Loading departments…")
+                } else {
+                    Picker("Intial year of appoinment in Group-1 service", selection: $department) {
                         Text("Select").tag("")
                         ForEach(vm.department, id: \.self) { dept in
                             Text(dept).tag(dept)
