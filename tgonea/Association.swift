@@ -23,7 +23,7 @@ struct Association: View {
                     ProgressView("Loading images…")
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 20) {
+                        LazyVStack(spacing: 10) {
                             ForEach(vm.items) { item in
                                 VStack(alignment: .leading, spacing: 8) {
                                     ScrollView(.vertical, showsIndicators: false) {
@@ -36,7 +36,7 @@ struct Association: View {
                                         .buttonStyle(.plain)
                                         
                                         Text(item.description)
-                                            .font(.largeTitle)
+                                            .font(.title)
                                             .padding(.trailing, 8)
                                             .frame(width:200,height:100,alignment: .center)
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
