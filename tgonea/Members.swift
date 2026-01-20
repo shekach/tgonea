@@ -61,7 +61,7 @@ struct Members: View {
                         }
                     } label: {
                         HStack {
-                            Image(systemName: "building.2")
+                            //Image(systemName: "building.2")
                             Text(selectedDepartment.isEmpty ? "Department" : selectedDepartment)
                                 .frame(width:100 ,height:50,alignment: .leading)
                         }
