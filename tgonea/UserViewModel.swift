@@ -8,7 +8,7 @@ import SwiftUI
 
 @MainActor
 final class UserViewModel: ObservableObject {
-
+//model
     struct Member: Identifiable, Equatable {
         let id: String
         let name: String
