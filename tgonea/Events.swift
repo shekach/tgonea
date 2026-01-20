@@ -21,6 +21,8 @@ struct Events: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(vm.members) { member in
+                                         HStack(alignment:.leading,space:10){
+                                             Image(member.Image)
                         VStack(alignment: .leading) {
                             Text(member.name)
                                 .font(.headline)
@@ -28,6 +30,7 @@ struct Events: View {
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
+                                         }
                     }
                 }
             }
