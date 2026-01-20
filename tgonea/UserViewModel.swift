@@ -17,6 +17,7 @@ final class UserViewModel: ObservableObject {
         let imageURL: URL?
         let dob: Date
         let qualifications: String
+        let initialYearAppointment: String
     }
 
     @Published var members: [Member] = []
