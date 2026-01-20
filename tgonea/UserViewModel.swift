@@ -17,11 +17,12 @@ final class UserViewModel: ObservableObject {
         let imageURL: URL?
         let dob: Date
         let qualifications: String
-        let initialYearAppointment: String
+        let initialAppointmentYear: String
     }
 
     @Published var members: [Member] = []
     @Published var department: [String] = []
+    @Published var initialAppointmentYear: [String] = []
     @Published var errorMessage: String?
 
     private let db = Firestore.firestore()
@@ -53,6 +54,18 @@ final class UserViewModel: ObservableObject {
             self.errorMessage = error.localizedDescription
         }
     }
+// MARK: - Fetch intialAppointmentYear
+    func fetchIntialAppointmentYear() async {
+        do {
+            let snapshot = try await db.collection("initialAppointmentYear").getDocuments()
+            self.department = snapshot.documents.compactMap {
+                $0.get("initialAppointmentYear") as? String ?? $0.get("year") as? String
+            }
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
 
     // MARK: - Load Users
     func loadUsers() async {
@@ -64,7 +77,7 @@ final class UserViewModel: ObservableObject {
                 let phoneNumber = doc.get("phoneNumber") as? String ?? ""
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
-
+                let initialAppointmentYear = doc.get("year") as? String ?? ""
                 // DOB as Date (IMPORTANT FOR AGE)
                 let dob: Date
                 if let ts = doc.get("dob") as? Timestamp {
@@ -89,7 +102,8 @@ final class UserViewModel: ObservableObject {
                     department: department,
                     imageURL: url,
                     dob: dob,
-                    qualifications: qualifications
+                    qualifications: qualifications,
+                    initialAppointmentYear: initialAppointmentYear
                 )
             }
 
@@ -131,7 +145,8 @@ final class UserViewModel: ObservableObject {
                     department: department,
                     imageURL: url,
                     dob: dob,
-                    qualifications: qualifications
+                    qualifications: qualifications,
+                    initialAppointmentYear: initialAppointmentYear
                 )
             }
 
