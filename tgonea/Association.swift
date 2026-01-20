@@ -31,14 +31,14 @@ struct Association: View {
                                         
                                         Button(action: { expandedItem = item }) {
                                             CachedAsyncImage(url: item.imageURL, contentMode: .fit, cornerRadius: 12)
-                                                .frame(width: 400, height: 200, alignment: .center)
+                                                .frame(width: 200, height: 200, alignment: .center)
                                         }
                                         .buttonStyle(.plain)
                                         
                                         Text(item.description)
                                             .font(.title)
                                             .padding(.trailing, 8)
-                                            .frame(width:200,height:100,alignment: .center)
+                                            .frame(width:100,height:100,alignment: .center)
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
                                     }
                                 }
