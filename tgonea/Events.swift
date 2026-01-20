@@ -22,7 +22,7 @@ struct Events: View {
                 } else {
                     ForEach(vm.members) { member in
                                          HStack(alignment:.leading,space:10){
-                                             Image(member.url)
+                                             Image(member.imageURL)
                                              .resizable()
                                              .scaledToFit()
                                              .frame(width:200 , height:100 , alignemnt:.leading)
