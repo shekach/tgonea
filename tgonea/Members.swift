@@ -21,12 +21,14 @@ struct Members: View {
     @State private var selectedDepartment: String = ""
     @State private var minAge: String = ""
     @State private var maxAge: String = ""
+    @State private var initialAppointmentYear: String = ""
 
     // MARK: - Filtered Members
     private var filteredMembers: [UserViewModel.Member] {
         vm.members.filter { member in
             // Department filter (if selected)
             let matchesDepartment = selectedDepartment.isEmpty || member.department == selectedDepartment
+                           let initialAppointmentYear = initialAppointmentYear.isEmpty || member.initialAppointmentYear == initialAppointmentYear
 
             // Age calculation
             let age = calculateAge(from: member.dob)
@@ -175,6 +177,9 @@ struct Members: View {
                     .font(.subheadline.bold())
 
                 Text("🏢 \(member.department)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                 Text(" \(member.initialAppintmentYear)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
