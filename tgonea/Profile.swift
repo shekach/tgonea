@@ -71,12 +71,12 @@ struct Profile: View {
                     .pickerStyle(.menu)
                      // MARK: - appoinment year Picker
                 if vm.department.isEmpty {
-                    ProgressView("Loading departments…")
+                    ProgressView("Loading…")
                 } else {
-                    Picker("Intial year of appoinment in Group-1 service", selection: $department) {
+                    Picker("Intial year of appoinment in Group-1 service", selection: $initialAppointmentYear) {
                         Text("Select").tag("")
-                        ForEach(vm.department, id: \.self) { dept in
-                            Text(dept).tag(dept)
+                        ForEach(vm.initial AppointmentYear, id: \.self) { initialAppointmentYear in
+                            Text(initialAppointmentYear).tag(initialAppointmentYear)
                         }
                     }
                     .pickerStyle(.menu)
@@ -135,6 +135,9 @@ struct Profile: View {
         .task {
             await vm.fetchDepartment()
         }
+            .task {
+                await vm.fetchInitialAppointmentYear()
+            }
     }
 
     // MARK: - Form Validation
@@ -142,6 +145,7 @@ struct Profile: View {
         !name.trimmingCharacters(in: .whitespaces).isEmpty &&
         phoneNumber.count == 10 &&
         !department.isEmpty &&
+        !initialAppointmentYear.isEmpty &&
         !qualifications.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
@@ -165,7 +169,8 @@ struct Profile: View {
                 "qualifications": qualifications,
                 "dob": Timestamp(date: dob),
                 "retirementDate": Timestamp(date: retirementDate),
-                "createdAt": Timestamp()
+                "createdAt": Timestamp(),
+                "initialAppointmentYear": initialAppointmentYear
             ]
 
             if let photoURL {
