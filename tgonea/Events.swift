@@ -22,7 +22,9 @@ struct Events: View {
                 } else {
                     ForEach(vm.members) { member in
                                          HStack(alignment:.leading,space:10){
-                                             Image(member.Image)
+                                             Image(member.url)
+                                             .scaledToFit()
+                                             .frame(width:200 , height:100 , alignemnt:.leading)
                         VStack(alignment: .leading) {
                             Text(member.name)
                                 .font(.headline)
