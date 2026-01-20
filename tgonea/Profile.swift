@@ -69,13 +69,15 @@ struct Profile: View {
                         }
                     }
                     .pickerStyle(.menu)
-                     // MARK: - appoinment year Picker
-                if vm.department.isEmpty {
+                }
+
+                // MARK: - Appointment Year Picker
+                if vm.initialAppointmentYear.isEmpty {
                     ProgressView("Loading…")
                 } else {
                     Picker("Intial year of appoinment in Group-1 service", selection: $initialAppointmentYear) {
                         Text("Select").tag("")
-                        ForEach(vm.initial AppointmentYear, id: \.self) { initialAppointmentYear in
+                        ForEach(vm.initialAppointmentYear, id: \.self) { initialAppointmentYear in
                             Text(initialAppointmentYear).tag(initialAppointmentYear)
                         }
                     }
@@ -133,11 +135,10 @@ struct Profile: View {
         }
         .navigationTitle("Profile")
         .task {
+            // Directly call known async methods on the view model.
             await vm.fetchDepartment()
+            await vm.fetchInitialAppointmentYear()
         }
-            .task {
-                await vm.fetchInitialAppointmentYear()
-            }
     }
 
     // MARK: - Form Validation
