@@ -38,7 +38,7 @@ struct Association: View {
                                         Text(item.description)
                                             .font(.title)
                                             .padding(.trailing, 8)
-                                            .frame(width:100,height:100,alignment: .center)
+                                            .frame(width:300,height:100,alignment: .leading)
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
                                     }
                                 }
@@ -54,7 +54,7 @@ struct Association: View {
             }
             .sheet(item: $expandedItem) { item in
                 ZStack {
-                    Color.black.ignoresSafeArea()
+                    Color.white.ignoresSafeArea()
                     VStack {
                         CachedAsyncImage(url: item.imageURL, contentMode: .fit, cornerRadius: 12)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
