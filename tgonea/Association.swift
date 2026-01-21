@@ -62,7 +62,7 @@ struct Association: View {
                             .padding()
 
                         Text(item.description)
-                            .font(.title)
+                            .font(.body)
                             .foregroundColor(.white)
                             .padding()
 
