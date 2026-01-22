@@ -18,6 +18,7 @@ final class UserViewModel: ObservableObject {
         let dob: Date
         let qualifications: String
         let initialAppointmentYear: String
+        let pph: String
     }
 
     @Published var members: [Member] = []
@@ -78,6 +79,7 @@ final class UserViewModel: ObservableObject {
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
                 let initialAppointmentYear = doc.get("year") as? String ?? ""
+                let pph = doc.get("pph") as? String ?? ""
                 // DOB as Date (IMPORTANT FOR AGE)
                 let dob: Date
                 if let ts = doc.get("dob") as? Timestamp {
@@ -103,7 +105,8 @@ final class UserViewModel: ObservableObject {
                     imageURL: url,
                     dob: dob,
                     qualifications: qualifications,
-                    initialAppointmentYear: initialAppointmentYear
+                    initialAppointmentYear: initialAppointmentYear,
+                    pph: pph
                 )
             }
 
@@ -146,7 +149,8 @@ final class UserViewModel: ObservableObject {
                     imageURL: url,
                     dob: dob,
                     qualifications: qualifications,
-                    initialAppointmentYear: initialAppointmentYear
+                    initialAppointmentYear: initialAppointmentYear,
+                    pph: pph
                 )
             }
 
