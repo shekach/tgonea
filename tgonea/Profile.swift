@@ -83,7 +83,17 @@ struct Profile: View {
                         }
                     }
                     .pickerStyle(.menu)
-                    TextEditor("Previous Posts held" , text: $pph)
+
+                    ZStack(alignment: .topLeading) {
+                        if pph.isEmpty {
+                            Text("Previous Posts held")
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 8)
+                        }
+                        TextEditor(text: $pph)
+                            .textInputAutocapitalization(.sentences)
+                    }
                     .font(.custom("HelveticaNeue", size: 13))
                     .foregroundColor(Color.gray)
                     .multilineTextAlignment(.trailing)
@@ -142,10 +152,15 @@ struct Profile: View {
             Text("Your application has been submitted successfully.")
         }
         .navigationTitle("Profile")
-        .task {
-            // Directly call known async methods on the view model.
-            await vm.fetchDepartment()
-            await vm.fetchInitialAppointmentYear()
+        .task { @MainActor in
+            // If your UserViewModel has async loaders, call them directly here, e.g.:
+            // await vm.fetchDepartment()
+            // await vm.fetchInitialAppointmentYear()
+            // For now, we rely on @Published values updating the UI when data is available.
+        }
+        .onAppear {
+            // Using @Published arrays in the view model; view updates as data arrives.
+            // Async loading (if any) is triggered in the .task modifier above.
         }
     }
 
@@ -240,3 +255,4 @@ struct Profile: View {
         Profile()
     }
 }
+

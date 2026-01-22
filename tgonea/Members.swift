@@ -28,7 +28,7 @@ struct Members: View {
         vm.members.filter { member in
             // Department filter (if selected)
             let matchesDepartment = selectedDepartment.isEmpty || member.department == selectedDepartment
-                           let initialAppointmentYear = initialAppointmentYear.isEmpty || member.initialAppointmentYear == initialAppointmentYear
+            let matchesInitialYear = self.initialAppointmentYear.isEmpty || member.initialAppointmentYear == self.initialAppointmentYear
 
             // Age calculation
             let age = calculateAge(from: member.dob)
@@ -45,7 +45,7 @@ struct Members: View {
                 return true
             }()
 
-            return matchesDepartment && minOk && maxOk
+            return matchesDepartment && matchesInitialYear && minOk && maxOk
         }
     }
 
@@ -179,7 +179,7 @@ struct Members: View {
                 Text("🏢 \(member.department)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                 Text(" \(member.initialAppintmentYear)")
+                 Text("🗓️ Initial Appointment: \(member.initialAppointmentYear)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

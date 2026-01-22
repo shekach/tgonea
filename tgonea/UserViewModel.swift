@@ -124,6 +124,8 @@ final class UserViewModel: ObservableObject {
                 let phoneNumber = doc.get("phoneNumber") as? String ?? ""
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
+                let initialAppointmentYear = doc.get("year") as? String ?? ""
+                let pph = doc.get("pph") as? String ?? ""
 
                 let dob: Date
                 if let ts = doc.get("dob") as? Timestamp {

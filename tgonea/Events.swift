@@ -1,5 +1,3 @@
-
-
 //
 //  Events.swift
 //  tgonea
@@ -21,11 +19,40 @@ struct Events: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(vm.members) { member in
-                                         HStack(alignment:.leading,space:10){
-                                             Image(member.imageURL)
-                                             .resizable()
-                                             .scaledToFit()
-                                             .frame(width:200 , height:100 , alignemnt:.leading)
+                                         HStack(alignment: .top, spacing: 10) {
+                                             if let url = member.imageURL {
+                                                 AsyncImage(url: url) { phase in
+                                                     switch phase {
+                                                     case .empty:
+                                                         ProgressView()
+                                                             .frame(width: 200, height: 100, alignment: .leading)
+                                                     case .success(let image):
+                                                         image
+                                                             .resizable()
+                                                             .scaledToFill()
+                                                             .frame(width: 200, height: 100, alignment: .leading)
+                                                             .clipped()
+                                                     case .failure:
+                                                         Image(systemName: "person.crop.rectangle")
+                                                             .resizable()
+                                                             .scaledToFit()
+                                                             .frame(width: 200, height: 100, alignment: .leading)
+                                                             .foregroundStyle(.secondary)
+                                                     @unknown default:
+                                                         Image(systemName: "photo")
+                                                             .resizable()
+                                                             .scaledToFit()
+                                                             .frame(width: 200, height: 100, alignment: .leading)
+                                                             .foregroundStyle(.secondary)
+                                                     }
+                                                 }
+                                             } else {
+                                                 Image(systemName: "person.crop.rectangle")
+                                                     .resizable()
+                                                     .scaledToFit()
+                                                     .frame(width: 200, height: 100, alignment: .leading)
+                                                     .foregroundStyle(.secondary)
+                                             }
                         VStack(alignment: .leading) {
                             Text(member.name)
                                 .font(.headline)
