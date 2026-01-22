@@ -20,6 +20,7 @@ struct Profile: View {
     @State private var dob: Date = Date()
     @State private var qualifications: String = ""
     @State private var initialAppointmentYear: String = ""
+    @State private  var pph: String = ""
 
     // MARK: - UI State
     @State private var showAlert = false
@@ -82,6 +83,13 @@ struct Profile: View {
                         }
                     }
                     .pickerStyle(.menu)
+                    TextEditor("Previous Posts held" , text: $pph)
+                    .font(.custom("HelveticaNeue", size: 13))
+                    .foregroundColor(Color.gray)
+                    .multilineTextAlignment(.trailing)
+                    .frame(width:300 , height:200)
+                    .lineSpacing(10)
+                    .padding()
                 }
             }
 
