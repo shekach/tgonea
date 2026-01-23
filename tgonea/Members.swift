@@ -181,7 +181,11 @@ struct Members: View {
                     .foregroundStyle(.secondary)
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                  Text("🗓️ Initial Appointment: \(member.initialAppointmentYear)")
+=======
+                 Text(" \(member.initialAppointmentYear)")
+>>>>>>> Stashed changes
 =======
                  Text(" \(member.initialAppointmentYear)")
 >>>>>>> Stashed changes

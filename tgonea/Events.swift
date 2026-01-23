@@ -21,6 +21,7 @@ struct Events: View {
                     ForEach(vm.members) { member in
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                                          HStack(alignment: .top, spacing: 10) {
                                              if let url = member.imageURL {
                                                  AsyncImage(url: url) { phase in
@@ -64,6 +65,8 @@ struct Events: View {
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
                         HStack(alignment: .top, spacing: 10) {
 
                             AsyncImage(url: member.imageURL) { phase in
@@ -95,6 +98,9 @@ struct Events: View {
                                     .foregroundStyle(.secondary)
                             }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
