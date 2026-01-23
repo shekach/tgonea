@@ -125,7 +125,10 @@ final class UserViewModel: ObservableObject {
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
                 let initialAppointmentYear = doc.get("year") as? String ?? ""
+<<<<<<< Updated upstream
                 let pph = doc.get("pph") as? String ?? ""
+=======
+>>>>>>> Stashed changes
 
                 let dob: Date
                 if let ts = doc.get("dob") as? Timestamp {
@@ -156,11 +159,14 @@ final class UserViewModel: ObservableObject {
                 )
             }
 
-            self.members = allMembers.filter { isRetiringThisYear(dob: $0.dob, retirementAge: retirementAge) }
+            self.members = allMembers.filter {
+                isRetiringThisYear(dob: $0.dob, retirementAge: retirementAge)
+            }
             self.errorMessage = nil
         } catch {
             self.errorMessage = error.localizedDescription
         }
     }
+
     
 }

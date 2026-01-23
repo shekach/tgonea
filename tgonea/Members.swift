@@ -179,7 +179,11 @@ struct Members: View {
                 Text("🏢 \(member.department)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+<<<<<<< Updated upstream
                  Text("🗓️ Initial Appointment: \(member.initialAppointmentYear)")
+=======
+                 Text(" \(member.initialAppointmentYear)")
+>>>>>>> Stashed changes
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
