@@ -21,7 +21,8 @@ struct Profile: View {
     @State private var qualifications: String = ""
     @State private var initialAppointmentYear: String = ""
     @State private  var pph: String = ""
-
+    @State private var presentDesignation:String = ""
+    @State private var presentPost:String = ""
     // MARK: - UI State
     @State private var showAlert = false
     @State private var selectedItem: PhotosPickerItem?
@@ -37,6 +38,14 @@ struct Profile: View {
             Section("Personal Information") {
 
                 TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.characters)
+                    .focused($isFocused)
+                TextField("Present Designation in the Departmnet", text: $presentDesignation)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.characters)
+                    .focused($isFocused)
+                TextField("Present Post held", text: $presentPost)
                     .textFieldStyle(.roundedBorder)
                     .textInputAutocapitalization(.characters)
                     .focused($isFocused)
@@ -97,7 +106,7 @@ struct Profile: View {
                     .font(.custom("HelveticaNeue", size: 13))
                     .foregroundColor(Color.gray)
                     .multilineTextAlignment(.trailing)
-                    .frame(width:300 , height:200)
+                    .frame(width:300 , height:50)
                     .lineSpacing(10)
                     .padding()
                 }
@@ -152,7 +161,9 @@ struct Profile: View {
             Text("Your application has been submitted successfully.")
         }
         .navigationTitle("Profile")
-        .task { @MainActor in
+        .task {
+            await vm.fetchDepartment()
+            await vm.fetchInitialAppointmentYear()   
             // If your UserViewModel has async loaders, call them directly here, e.g.:
             // await vm.fetchDepartment()
             // await vm.fetchInitialAppointmentYear()

@@ -56,10 +56,10 @@ final class UserViewModel: ObservableObject {
         }
     }
 // MARK: - Fetch intialAppointmentYear
-    func fetchIntialAppointmentYear() async {
+    func fetchInitialAppointmentYear() async {
         do {
             let snapshot = try await db.collection("initialAppointmentYear").getDocuments()
-            self.department = snapshot.documents.compactMap {
+            self.initialAppointmentYear = snapshot.documents.compactMap {
                 $0.get("initialAppointmentYear") as? String ?? $0.get("year") as? String
             }
             self.errorMessage = nil
