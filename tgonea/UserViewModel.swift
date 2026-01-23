@@ -126,7 +126,10 @@ final class UserViewModel: ObservableObject {
                 let qualifications = doc.get("qualifications") as? String ?? ""
                 let initialAppointmentYear = doc.get("year") as? String ?? ""
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 let pph = doc.get("pph") as? String ?? ""
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
