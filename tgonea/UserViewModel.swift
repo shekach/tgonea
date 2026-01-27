@@ -19,6 +19,9 @@ final class UserViewModel: ObservableObject {
         let qualifications: String
         let initialAppointmentYear: String
         let pph: String
+        let presentDesignation: String
+        let presentPost: String
+        let pph: pph
     }
 
     @Published var members: [Member] = []
@@ -80,6 +83,8 @@ final class UserViewModel: ObservableObject {
                 let qualifications = doc.get("qualifications") as? String ?? ""
                 let initialAppointmentYear = doc.get("year") as? String ?? ""
                 let pph = doc.get("pph") as? String ?? ""
+                let presentDesignation = doc.get("presentDesignation") as? String ?? ""
+                let presentPost = doc.get("presentPost") as? String ?? ""
                 // DOB as Date (IMPORTANT FOR AGE)
                 let dob: Date
                 if let ts = doc.get("dob") as? Timestamp {
@@ -106,7 +111,9 @@ final class UserViewModel: ObservableObject {
                     dob: dob,
                     qualifications: qualifications,
                     initialAppointmentYear: initialAppointmentYear,
-                    pph: pph
+                    pph: pph,
+                    presentDesignation: presentDesignation,
+                    presentPost: presentPost
                 )
             }
 
@@ -125,16 +132,10 @@ final class UserViewModel: ObservableObject {
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
                 let initialAppointmentYear = doc.get("year") as? String ?? ""
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+                let presentDesignation = doc.get("presentDesignation") as? String ?? ""
+                let presentPost = doc.get("presentPost") as? String ?? ""
                 let pph = doc.get("pph") as? String ?? ""
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 
                 let dob: Date
                 if let ts = doc.get("dob") as? Timestamp {
@@ -161,7 +162,9 @@ final class UserViewModel: ObservableObject {
                     dob: dob,
                     qualifications: qualifications,
                     initialAppointmentYear: initialAppointmentYear,
-                    pph: pph
+                    pph: pph,
+                    presentDesignation: presentDesignation,
+                    presentPost: presentPost
                 )
             }
 
