@@ -205,7 +205,10 @@ struct Profile: View {
                 "dob": Timestamp(date: dob),
                 "retirementDate": Timestamp(date: retirementDate),
                 "createdAt": Timestamp(),
-                "initialAppointmentYear": initialAppointmentYear
+                "initialAppointmentYear": initialAppointmentYear,
+                "pph":pph,
+                "presentDesignation":presentDesignation,
+                "presentPost":presentPost
             ]
 
             if let photoURL {
@@ -258,6 +261,10 @@ struct Profile: View {
         selectedItem = nil
         selectedImageData = nil
         isFocused = false
+        presentDesignation = ""
+        pph = ""
+        presentPost = ""
+        initialAppointmentYear = ""
     }
 }
 
