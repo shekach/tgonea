@@ -105,7 +105,7 @@ struct Profile: View {
                     }
                     .font(.custom("HelveticaNeue", size: 13))
                     .foregroundColor(Color.gray)
-                    .multilineTextAlignment(.trailing)
+                    .multilineTextAlignment(.leading)
                     .frame(width:300 , height:50)
                     .lineSpacing(10)
                     .padding()
@@ -164,15 +164,9 @@ struct Profile: View {
         .task {
             await vm.fetchDepartment()
             await vm.fetchInitialAppointmentYear()   
-            // If your UserViewModel has async loaders, call them directly here, e.g.:
-            // await vm.fetchDepartment()
-            // await vm.fetchInitialAppointmentYear()
-            // For now, we rely on @Published values updating the UI when data is available.
+            
         }
-        .onAppear {
-            // Using @Published arrays in the view model; view updates as data arrives.
-            // Async loading (if any) is triggered in the .task modifier above.
-        }
+        
     }
 
     // MARK: - Form Validation

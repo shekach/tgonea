@@ -11,7 +11,6 @@ struct Events: View {
     @StateObject private var vm = UserViewModel()
     
     var body: some View {
-        
         List {
             Section("Persons Retiring This Year") {
                 if vm.members.isEmpty {
@@ -19,77 +18,43 @@ struct Events: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(vm.members) { member in
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                                         HStack(alignment: .top, spacing: 10) {
-                                             if let url = member.imageURL {
-                                                 AsyncImage(url: url) { phase in
-                                                     switch phase {
-                                                     case .empty:
-                                                         ProgressView()
-                                                             .frame(width: 200, height: 100, alignment: .leading)
-                                                     case .success(let image):
-                                                         image
-                                                             .resizable()
-                                                             .scaledToFill()
-                                                             .frame(width: 200, height: 100, alignment: .leading)
-                                                             .clipped()
-                                                     case .failure:
-                                                         Image(systemName: "person.crop.rectangle")
-                                                             .resizable()
-                                                             .scaledToFit()
-                                                             .frame(width: 200, height: 100, alignment: .leading)
-                                                             .foregroundStyle(.secondary)
-                                                     @unknown default:
-                                                         Image(systemName: "photo")
-                                                             .resizable()
-                                                             .scaledToFit()
-                                                             .frame(width: 200, height: 100, alignment: .leading)
-                                                             .foregroundStyle(.secondary)
-                                                     }
-                                                 }
-                                             } else {
-                                                 Image(systemName: "person.crop.rectangle")
-                                                     .resizable()
-                                                     .scaledToFit()
-                                                     .frame(width: 200, height: 100, alignment: .leading)
-                                                     .foregroundStyle(.secondary)
-                                             }
-                        VStack(alignment: .leading) {
-                            Text(member.name)
-                                .font(.headline)
-                            Text(member.department)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                         HStack(alignment: .top, spacing: 10) {
-
-                            AsyncImage(url: member.imageURL) { phase in
-                                switch phase {
-                                case .empty:
-                                    ProgressView()
-                                        .frame(width: 200, height: 100)
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                case .failure:
-                                    Image(systemName: "person.crop.rectangle")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundStyle(.secondary)
-                                @unknown default:
-                                    EmptyView()
+                            // Image
+                            if let url = member.imageURL {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(width: 200, height: 100, alignment: .leading)
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 200, height: 100, alignment: .leading)
+                                            .clipped()
+                                    case .failure:
+                                        Image(systemName: "person.crop.rectangle")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 200, height: 100, alignment: .leading)
+                                            .foregroundStyle(.secondary)
+                                    @unknown default:
+                                        Image(systemName: "photo")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 200, height: 100, alignment: .leading)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
+                            } else {
+                                Image(systemName: "person.crop.rectangle")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 200, height: 100, alignment: .leading)
+                                    .foregroundStyle(.secondary)
                             }
-                            .frame(width: 200, height: 100)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-
+                            
+                            // Text content
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(member.name)
                                     .font(.headline)
@@ -97,21 +62,11 @@ struct Events: View {
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                         }
                     }
-
                 }
             }
-            
         }
-        
         .navigationTitle("Events")
         .task {
             await vm.loadRetiringThisYear()

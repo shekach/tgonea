@@ -5,13 +5,6 @@
 //  Created by Soma Shekar on 26/12/25.
 //
 
-//
-//  Members.swift
-//  tgonea
-//
-//  Created by Soma Shekar on 26/12/25.
-//
-
 import SwiftUI
 
 struct Members: View {
@@ -19,33 +12,16 @@ struct Members: View {
     @StateObject private var vm = UserViewModel()
 
     @State private var selectedDepartment: String = ""
-    @State private var minAge: String = ""
-    @State private var maxAge: String = ""
+    @State private var selectedBatch: String = ""
     @State private var initialAppointmentYear: String = ""
+    @State private var expandedMember: UserViewModel.Member? = nil
 
     // MARK: - Filtered Members
     private var filteredMembers: [UserViewModel.Member] {
         vm.members.filter { member in
-            // Department filter (if selected)
             let matchesDepartment = selectedDepartment.isEmpty || member.department == selectedDepartment
-            let matchesInitialYear = self.initialAppointmentYear.isEmpty || member.initialAppointmentYear == self.initialAppointmentYear
-
-            // Age calculation
-            let age = calculateAge(from: member.dob)
-
-            // Min age filter
-            let minOk: Bool = {
-                if let min = Int(minAge) { return age >= min }
-                return true
-            }()
-
-            // Max age filter
-            let maxOk: Bool = {
-                if let max = Int(maxAge) { return age <= max }
-                return true
-            }()
-
-            return matchesDepartment && matchesInitialYear && minOk && maxOk
+            let matchesInitialYear = initialAppointmentYear.isEmpty || member.initialAppointmentYear == initialAppointmentYear
+            return matchesDepartment && matchesInitialYear
         }
     }
 
@@ -71,30 +47,30 @@ struct Members: View {
                         .background(Color.gray.opacity(0.12))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-
-                    // Min age
-                    TextField("Min Age", text: $minAge)
-                        .keyboardType(.numberPad)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 120)
-                        .onChange(of: minAge) { _, newValue in
-                            minAge = String(newValue.filter { $0.isNumber }.prefix(3))
+                    Menu {
+                        Button("All Batches") { initialAppointmentYear = "" }
+                        ForEach(Array(Set(vm.members.map { $0.initialAppointmentYear })).sorted(), id: \.self) { year in
+                            Button(year) { initialAppointmentYear = year }
                         }
-
-                    // Max age
-                    TextField("Max Age", text: $maxAge)
-                        .keyboardType(.numberPad)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 120)
-                        .onChange(of: maxAge) { _, newValue in
-                            maxAge = String(newValue.filter { $0.isNumber }.prefix(3))
+                    } label: {
+                        HStack {
+                            Text(initialAppointmentYear.isEmpty ? "Batch Year" : initialAppointmentYear)
+                                .frame(width:100 ,height:50,alignment: .leading)
                         }
+                        .padding(8)
+                        .background(Color.gray.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
 
+                    
+
+                    
+
+                    
                     // Clear filters
                     Button {
                         selectedDepartment = ""
-                        minAge = ""
-                        maxAge = ""
+                        initialAppointmentYear = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.secondary)
@@ -138,6 +114,78 @@ struct Members: View {
                 await vm.loadUsers()
             }
         }
+     
+        .sheet(item: $expandedMember) { member in
+            ScrollView {
+                VStack(spacing: 16) {
+                    AsyncImage(url: member.imageURL) { phase in
+                        switch phase {
+                        case .empty:
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.gray.opacity(0.2))
+                                Image(systemName: "person.crop.circle.fill")
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(.secondary)
+                            }
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        case .failure:
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.gray.opacity(0.2))
+                                Image(systemName: "person.crop.circle.badge.exclam")
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(.secondary)
+                            }
+                        @unknown default:
+                            Color.clear
+                        }
+                    }
+                    .frame(height: 300)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(member.name)
+                            .font(.title2.bold())
+
+                        Text(member.qualifications)
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+
+                        Divider()
+
+                        Group {
+                            Text("Phone: \(member.phoneNumber)")
+                            Text("Age: \(calculateAge(from: member.dob)) years")
+                            Text("Department: \(member.department)")
+                            Text("Initial Appointment: \(member.initialAppointmentYear)")
+                            Text("Present Post: \(member.presentPost)")
+                            Text("Present Designation: \(member.presentDesignation)")
+                            Text("PPH: \(member.pph)")
+                        }
+                        .font(.body)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Button {
+                        expandedMember = nil
+                    } label: {
+                        Text("Close")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.secondary.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+                .padding()
+            }
+            .presentationDetents([.large])
+        }
+        
+        
     }
 
     // MARK: - Member Row
@@ -160,6 +208,10 @@ struct Members: View {
             }
             .frame(width: 72, height: 72)
             .clipShape(RoundedRectangle(cornerRadius: 8))
+            .contentShape(Rectangle())
+            .onTapGesture {
+                expandedMember = member
+            }
 
             VStack(alignment: .leading, spacing: 6) {
 
@@ -170,30 +222,27 @@ struct Members: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                Text("📞 \(member.phoneNumber)")
+                Text("Phone:\(member.phoneNumber)")
                     .font(.subheadline)
 
-                Text("🎂 Age: \(calculateAge(from: member.dob)) years")
+                Text("Age: \(calculateAge(from: member.dob)) years")
                     .font(.subheadline.bold())
 
-                Text("🏢 \(member.department)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                 Text("🗓️ Initial Appointment: \(member.initialAppointmentYear)")
-=======
-                 Text(" \(member.initialAppointmentYear)")
->>>>>>> Stashed changes
-=======
-                 Text(" \(member.initialAppointmentYear)")
->>>>>>> Stashed changes
-=======
-                 Text(" \(member.initialAppointmentYear)")
->>>>>>> Stashed changes
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                Text("Department \(member.department)")
+                    .font(.subheadline)
+                    
+                let year = member.initialAppointmentYear.trimmingCharacters(in: .whitespacesAndNewlines)
+                Text(year.isEmpty ? "Initial Appointment: N/A" : "Initial Appointment: \(year)")
+                    .font(.subheadline)
+
+                Text(" \(member.presentPost)")
+//
+//                 Text(" \(member.presentDesignation)")
+//
+//                 Text(" \(member.pph)")
+
+                   
+                    
             }
         }
         .padding(.vertical, 6)
@@ -220,3 +269,4 @@ struct Members: View {
 #Preview {
     Members()
 }
+

@@ -30,12 +30,7 @@ struct ContentView: View {
                     }
                 
             }
-            .background(
-                Image("bg")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-            )
+           
         }
         
     }

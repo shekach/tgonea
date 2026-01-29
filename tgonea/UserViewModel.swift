@@ -21,7 +21,6 @@ final class UserViewModel: ObservableObject {
         let pph: String
         let presentDesignation: String
         let presentPost: String
-        let pph: pph
     }
 
     @Published var members: [Member] = []
@@ -179,3 +178,4 @@ final class UserViewModel: ObservableObject {
 
     
 }
+
