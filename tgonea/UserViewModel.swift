@@ -31,19 +31,49 @@ final class UserViewModel: ObservableObject {
     private let db = Firestore.firestore()
 
     // MARK: - Retirement Logic
-    private func isRetiringThisYear(dob: Date, retirementAge: Int = 61, calendar: Calendar = .current) -> Bool {
-        let thisYear = calendar.component(.year, from: Date())
-        let birthYear = calendar.component(.year, from: dob)
-        // Person turns `retirementAge` this calendar year if:
-        // (thisYear - birthYear) == retirementAge AND their birthday occurs this year.
-        // We'll compute their birthday date this year and compare.
-        var birthdayThisYear = calendar.dateComponents([.month, .day], from: dob)
-        birthdayThisYear.year = thisYear
-        guard let birthdayDateThisYear = calendar.date(from: birthdayThisYear) else { return false }
+    private func retirementDate(
+    dob: Date,
+    retirementAge: Int,
+    calendar: Calendar = .current
+) -> Date? {
 
-        let ageAtEndOfYear = thisYear - birthYear
-        return ageAtEndOfYear == retirementAge && birthdayDateThisYear >= calendar.startOfDay(for: Date(timeIntervalSince1970: 0))
-    }
+    // 1️⃣ Date when employee completes retirement age
+    guard let dateAttainingAge = calendar.date(
+        byAdding: .year,
+        value: retirementAge,
+        to: dob
+    ) else { return nil }
+
+    // 2️⃣ Start of that month
+    let startOfMonth = calendar.date(
+        from: calendar.dateComponents([.year, .month], from: dateAttainingAge)
+    )!
+
+    // 3️⃣ Last day of that month
+    let retirementDate = calendar.date(
+        byAdding: DateComponents(month: 1, day: -1),
+        to: startOfMonth
+    )!
+
+    return retirementDate
+}
+    private func isRetiringThisYear(
+    dob: Date,
+    retirementAge: Int = 61,
+    calendar: Calendar = .current
+) -> Bool {
+
+    guard let retirementDate = retirementDate(
+        dob: dob,
+        retirementAge: retirementAge,
+        calendar: calendar
+    ) else { return false }
+
+    let retirementYear = calendar.component(.year, from: retirementDate)
+    let currentYear = calendar.component(.year, from: Date())
+
+    return retirementYear == currentYear
+}
 
     // MARK: - Fetch Departments
     func fetchDepartment() async {
