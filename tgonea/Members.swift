@@ -27,79 +27,94 @@ struct Members: View {
 
     var body: some View {
         NavigationStack {
+            ZStack {
+                LinearGradient(colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)], startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea()
 
-            VStack(spacing: 12) {
-                // Filters
-                HStack(alignment: .firstTextBaseline, spacing: 12) {
-                    // Department menu
-                    Menu {
-                        Button("All Departments") { selectedDepartment = "" }
-                        ForEach(Array(Set(vm.members.map { $0.department })).sorted(), id: \.self) { dept in
-                            Button(dept) { selectedDepartment = dept }
-                        }
-                    } label: {
-                        HStack {
-                            //Image(systemName: "building.2")
-                            Text(selectedDepartment.isEmpty ? "Department" : selectedDepartment)
-                                .frame(width:100 ,height:50,alignment: .leading)
-                        }
-                        .padding(8)
-                        .background(Color.gray.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    Menu {
-                        Button("All Batches") { initialAppointmentYear = "" }
-                        ForEach(Array(Set(vm.members.map { $0.initialAppointmentYear })).sorted(), id: \.self) { year in
-                            Button(year) { initialAppointmentYear = year }
-                        }
-                    } label: {
-                        HStack {
-                            Text(initialAppointmentYear.isEmpty ? "Batch Year" : initialAppointmentYear)
-                                .frame(width:100 ,height:50,alignment: .leading)
-                        }
-                        .padding(8)
-                        .background(Color.gray.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-
-                    
-
-                    
-
-                    
-                    // Clear filters
-                    Button {
-                        selectedDepartment = ""
-                        initialAppointmentYear = ""
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                    .accessibilityLabel("Clear Filters")
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
-
-                Group {
-                    if let error = vm.errorMessage {
-                        VStack(spacing: 12) {
-                            Text(error)
-                                .foregroundStyle(.red)
-                            Button("Retry") {
-                                Task { await vm.loadUsers() }
+                VStack(spacing: 12) {
+                    // Filters
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
+                        Menu {
+                            Button("All Departments") { selectedDepartment = "" }
+                            ForEach(Array(Set(vm.members.map { $0.department })).sorted(), id: \.self) { dept in
+                                Button(dept) { selectedDepartment = dept }
                             }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "building.2.fill")
+                                Text(selectedDepartment.isEmpty ? "Department" : selectedDepartment)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
                         }
+
+                        Menu {
+                            Button("All Batches") { initialAppointmentYear = "" }
+                            ForEach(Array(Set(vm.members.map { $0.initialAppointmentYear })).sorted(), id: \.self) { year in
+                                Button(year) { initialAppointmentYear = year }
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "calendar")
+                                Text(initialAppointmentYear.isEmpty ? "Batch Year" : initialAppointmentYear)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+                        }
+
+                        Button {
+                            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                selectedDepartment = ""
+                                initialAppointmentYear = ""
+                            }
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityLabel("Clear Filters")
                     }
-                    else if filteredMembers.isEmpty {
-                        ContentUnavailableView(
-                            "No Users",
-                            systemImage: "person.3",
-                            description: Text("No members found")
-                        )
-                    }
-                    else {
-                        List(filteredMembers) { member in
-                            memberRow(member)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+
+                    Group {
+                        if let error = vm.errorMessage {
+                            VStack(spacing: 12) {
+                                Text(error)
+                                    .foregroundStyle(.red)
+                                Button("Retry") {
+                                    Task { await vm.loadUsers() }
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemBackground)))
+                            .padding(.horizontal)
+                        } else if filteredMembers.isEmpty {
+                            ContentUnavailableView(
+                                "No Users",
+                                systemImage: "person.3",
+                                description: Text("No members found")
+                            )
+                            .padding(.top, 40)
+                        } else {
+                            ScrollView {
+                                LazyVStack(spacing: 12) {
+                                    ForEach(filteredMembers) { member in
+                                        Button {
+                                            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                                expandedMember = member
+                                            }
+                                        } label: {
+                                            memberCard(member)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                                .padding(.horizontal)
+                                .padding(.bottom, 16)
+                            }
                         }
                     }
                 }
@@ -114,7 +129,7 @@ struct Members: View {
                 await vm.loadUsers()
             }
         }
-     
+        .font(.system(.body, design: .rounded))
         .sheet(item: $expandedMember) { member in
             ScrollView {
                 VStack(spacing: 16) {
@@ -169,6 +184,8 @@ struct Members: View {
                         .font(.body)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 14).fill(Color(.systemBackground)))
 
                     Button {
                         expandedMember = nil
@@ -184,8 +201,6 @@ struct Members: View {
             }
             .presentationDetents([.large])
         }
-        
-        
     }
 
     // MARK: - Member Row
@@ -236,13 +251,6 @@ struct Members: View {
                     .font(.subheadline)
 
                 Text(" \(member.presentPost)")
-//
-//                 Text(" \(member.presentDesignation)")
-//
-//                 Text(" \(member.pph)")
-
-                   
-                    
             }
         }
         .padding(.vertical, 6)
@@ -263,6 +271,53 @@ struct Members: View {
             Image(systemName: icon)
                 .foregroundStyle(.secondary)
         }
+    }
+
+    // MARK: - Member Card
+    private func memberCard(_ member: UserViewModel.Member) -> some View {
+        HStack(spacing: 12) {
+            AsyncImage(url: member.imageURL) { phase in
+                switch phase {
+                case .empty:
+                    placeholder(icon: "person.crop.circle.fill")
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .failure:
+                    placeholder(icon: "person.crop.circle.badge.exclam")
+                @unknown default:
+                    Color.clear
+                }
+            }
+            .frame(width: 72, height: 72)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(member.name)
+                    .font(.headline)
+                Text(member.qualifications)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    Label("\(calculateAge(from: member.dob)) yrs", systemImage: "birthday.cake.fill")
+                    Label(member.department, systemImage: "building.2")
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.tertiary)
+        }
+        .padding(14)
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.black.opacity(0.06))
+        )
+        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .contentShape(Rectangle())
     }
 }
 

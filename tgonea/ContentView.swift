@@ -10,6 +10,16 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab = 0
     
+    private var tabTitle: String {
+        switch selectedTab {
+        case 0: return "Home"
+        case 1: return "Association"
+        case 2: return "Gallery"
+        case 3: return "Events"
+        default: return ""
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
@@ -27,6 +37,7 @@ struct ContentView: View {
                     .tabItem {
                         Label("Events", systemImage: "calendar")
                     }
+                    .tag(3)
                 Gallery()
                     .tabItem {
                         Label("Gallery", systemImage: "photo.fill")
@@ -34,7 +45,16 @@ struct ContentView: View {
                     .tag(2)
                 
             }
-            .tint(.blue)
+            .font(.system(.body, design: .rounded))
+            .tabViewStyle(.automatic)
+            .tint(Color.accentColor)
+            .animation(.spring(response: 0.45, dampingFraction: 0.85), value: selectedTab)
+            .background(
+                LinearGradient(colors: [Color(.systemBackground), Color(.secondarySystemBackground)], startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea()
+            )
+            .navigationTitle(tabTitle)
+            .navigationBarTitleDisplayMode(.inline)
            
         }
         
