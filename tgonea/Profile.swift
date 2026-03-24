@@ -37,6 +37,8 @@ struct Profile: View {
     @State private var presentPost:String = ""
     // MARK: - UI State
     @State private var showAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
     @State private var submittedProfile: SubmittedProfile?
@@ -206,8 +208,6 @@ struct Profile: View {
                             }
                         }
                         .buttonStyle(AppPrimaryButtonStyle())
-                        .disabled(!isFormValid)
-                        .opacity(isFormValid ? 1 : 0.55)
                     }
                     .padding(20)
                     .appGlassCardStyle()
@@ -225,10 +225,10 @@ struct Profile: View {
             }
         }
         // ✅ ALERT ATTACHED TO FORM (CORRECT)
-        .alert("Application Submitted", isPresented: $showAlert) {
+        .alert(alertTitle, isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Your application has been submitted successfully.")
+            Text(alertMessage)
         }
         .navigationTitle("Profile")
         .font(.system(.body, design: .rounded))
@@ -305,16 +305,49 @@ struct Profile: View {
     }
 
     // MARK: - Form Validation
-    private var isFormValid: Bool {
-        !name.trimmingCharacters(in: .whitespaces).isEmpty &&
-        phoneNumber.count == 10 &&
-        !department.isEmpty &&
-        !initialAppointmentYear.isEmpty &&
-        !qualifications.trimmingCharacters(in: .whitespaces).isEmpty
+    private var firstValidationMessage: String? {
+        if selectedImageData == nil {
+            return "Please add a profile photo."
+        }
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Please enter your name."
+        }
+        if presentDesignation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Please enter your present designation."
+        }
+        if presentPost.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Please enter your present post."
+        }
+        if phoneNumber.isEmpty {
+            return "Please enter your phone number."
+        }
+        if phoneNumber.count != 10 {
+            return "Phone number must be exactly 10 digits."
+        }
+        if qualifications.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Please enter your qualifications."
+        }
+        if department.isEmpty {
+            return "Please select your department."
+        }
+        if initialAppointmentYear.isEmpty {
+            return "Please select your initial appointment year."
+        }
+        if pph.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Please enter your previous posts held."
+        }
+        return nil
     }
 
     // MARK: - Submit Profile
     private func submitProfile() {
+        if let firstValidationMessage {
+            alertTitle = "Incomplete Form"
+            alertMessage = firstValidationMessage
+            showAlert = true
+            return
+        }
+
         let submittedSnapshot = SubmittedProfile(
             name: name,
             phoneNumber: phoneNumber,
@@ -357,14 +390,21 @@ struct Profile: View {
             }
 
             db.collection("users").addDocument(data: data) { error in
-                // Log error if any (optional)
                 if let error = error {
                     print("Failed to add user document: \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        alertTitle = "Submission Failed"
+                        alertMessage = "We couldn't submit your application right now. Please try again."
+                        showAlert = true
+                    }
+                    return
                 }
                 DispatchQueue.main.async {
                     submittedProfile = submittedSnapshot
                     resetForm()
-                    showAlert = true   // ✅ ALERT FIRES HERE
+                    alertTitle = "Application Submitted"
+                    alertMessage = "Your application has been submitted successfully."
+                    showAlert = true
                 }
             }
         }
