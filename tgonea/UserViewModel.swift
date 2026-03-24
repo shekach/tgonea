@@ -12,6 +12,7 @@ final class UserViewModel: ObservableObject {
     struct Member: Identifiable, Equatable {
         let id: String
         let name: String
+        let bloodGroup: String
         let phoneNumber: String
         let department: String
         let imageURL: URL?
@@ -107,6 +108,7 @@ final class UserViewModel: ObservableObject {
 
             self.members = snapshot.documents.map { doc in
                 let name = doc.get("name") as? String ?? ""
+                let bloodGroup = doc.get("bloodGroup") as? String ?? ""
                 let phoneNumber = doc.get("phoneNumber") as? String ?? ""
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
@@ -134,6 +136,7 @@ final class UserViewModel: ObservableObject {
                 return Member(
                     id: doc.documentID,
                     name: name,
+                    bloodGroup: bloodGroup,
                     phoneNumber: phoneNumber,
                     department: department,
                     imageURL: url,
@@ -157,6 +160,7 @@ final class UserViewModel: ObservableObject {
 
             let allMembers: [Member] = snapshot.documents.map { doc in
                 let name = doc.get("name") as? String ?? ""
+                let bloodGroup = doc.get(" bloodGroup") as? String ?? ""
                 let phoneNumber = doc.get("phoneNumber") as? String ?? ""
                 let department = doc.get("department") as? String ?? ""
                 let qualifications = doc.get("qualifications") as? String ?? ""
@@ -185,6 +189,7 @@ final class UserViewModel: ObservableObject {
                 return Member(
                     id: doc.documentID,
                     name: name,
+                    bloodGroup: bloodGroup,
                     phoneNumber: phoneNumber,
                     department: department,
                     imageURL: url,
