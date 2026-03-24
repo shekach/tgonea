@@ -43,21 +43,22 @@ struct ContentView: View {
                         Label("Gallery", systemImage: "photo.fill")
                     }
                     .tag(2)
-                
+
             }
             .font(.system(.body, design: .rounded))
             .tabViewStyle(.automatic)
-            .tint(Color.accentColor)
+            .tint(AppTheme.accent)
             .animation(.spring(response: 0.45, dampingFraction: 0.85), value: selectedTab)
             .background(
-                LinearGradient(colors: [Color(.systemBackground), Color(.secondarySystemBackground)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+                AppScreenBackground()
             )
             .navigationTitle(tabTitle)
             .navigationBarTitleDisplayMode(.inline)
-           
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 6)
+            }
         }
-        
+        .font(.system(.body, design: .rounded))
     }
 }
     

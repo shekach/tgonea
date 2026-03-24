@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct Members: View {
-
     @StateObject private var vm = UserViewModel()
 
     @State private var selectedDepartment: String = ""
-    @State private var selectedBatch: String = ""
     @State private var initialAppointmentYear: String = ""
     @State private var expandedMember: UserViewModel.Member? = nil
 
@@ -28,55 +26,60 @@ struct Members: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient(colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+                AppScreenBackground()
 
                 VStack(spacing: 12) {
-                    // Filters
-                    HStack(alignment: .firstTextBaseline, spacing: 12) {
-                        Menu {
-                            Button("All Departments") { selectedDepartment = "" }
-                            ForEach(Array(Set(vm.members.map { $0.department })).sorted(), id: \.self) { dept in
-                                Button(dept) { selectedDepartment = dept }
-                            }
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "building.2.fill")
-                                Text(selectedDepartment.isEmpty ? "Department" : selectedDepartment)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
-                        }
-
-                        Menu {
-                            Button("All Batches") { initialAppointmentYear = "" }
-                            ForEach(Array(Set(vm.members.map { $0.initialAppointmentYear })).sorted(), id: \.self) { year in
-                                Button(year) { initialAppointmentYear = year }
-                            }
-                        } label: {
-                            HStack(spacing: 8) {
-                                Image(systemName: "calendar")
-                                Text(initialAppointmentYear.isEmpty ? "Batch Year" : initialAppointmentYear)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
-                        }
-
-                        Button {
-                            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                                selectedDepartment = ""
-                                initialAppointmentYear = ""
-                            }
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
-                        }
-                        .accessibilityLabel("Clear Filters")
-                    }
+                    AppSectionHeader(
+                        eyebrow: "Directory",
+                        title: "Find members quickly",
+                        subtitle: "Filter by department or batch year and open a polished profile sheet for details."
+                    )
                     .padding(.horizontal)
-                    .padding(.top, 8)
+                    .padding(.top, 16)
+                    .stagedAppear()
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            Menu {
+                                Button("All Departments") { selectedDepartment = "" }
+                                ForEach(Array(Set(vm.members.map { $0.department })).sorted(), id: \.self) { dept in
+                                    Button(dept) { selectedDepartment = dept }
+                                }
+                            } label: {
+                                AppChip(
+                                    icon: "building.2.fill",
+                                    title: selectedDepartment.isEmpty ? "Department" : selectedDepartment,
+                                    isActive: !selectedDepartment.isEmpty
+                                )
+                            }
+
+                            Menu {
+                                Button("All Batches") { initialAppointmentYear = "" }
+                                ForEach(Array(Set(vm.members.map { $0.initialAppointmentYear })).sorted(), id: \.self) { year in
+                                    Button(year) { initialAppointmentYear = year }
+                                }
+                            } label: {
+                                AppChip(
+                                    icon: "calendar",
+                                    title: initialAppointmentYear.isEmpty ? "Batch Year" : initialAppointmentYear,
+                                    isActive: !initialAppointmentYear.isEmpty
+                                )
+                            }
+
+                            Button {
+                                withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                    selectedDepartment = ""
+                                    initialAppointmentYear = ""
+                                }
+                            } label: {
+                                AppChip(icon: "arrow.counterclockwise", title: "Reset")
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Clear Filters")
+                        }
+                        .padding(.horizontal)
+                    }
+                    .stagedAppear(0.06)
 
                     Group {
                         if let error = vm.errorMessage {
@@ -86,10 +89,10 @@ struct Members: View {
                                 Button("Retry") {
                                     Task { await vm.loadUsers() }
                                 }
-                                .buttonStyle(.bordered)
+                                .buttonStyle(AppPrimaryButtonStyle())
                             }
                             .padding()
-                            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemBackground)))
+                            .appCardStyle()
                             .padding(.horizontal)
                         } else if filteredMembers.isEmpty {
                             ContentUnavailableView(
@@ -101,7 +104,7 @@ struct Members: View {
                         } else {
                             ScrollView {
                                 LazyVStack(spacing: 12) {
-                                    ForEach(filteredMembers) { member in
+                                    ForEach(Array(filteredMembers.enumerated()), id: \.element.id) { index, member in
                                         Button {
                                             withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
                                                 expandedMember = member
@@ -110,6 +113,7 @@ struct Members: View {
                                             memberCard(member)
                                         }
                                         .buttonStyle(.plain)
+                                        .stagedAppear(Double(index) * 0.03 + 0.08)
                                     }
                                 }
                                 .padding(.horizontal)
@@ -131,73 +135,75 @@ struct Members: View {
         }
         .font(.system(.body, design: .rounded))
         .sheet(item: $expandedMember) { member in
-            ScrollView {
-                VStack(spacing: 16) {
-                    AsyncImage(url: member.imageURL) { phase in
-                        switch phase {
-                        case .empty:
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.gray.opacity(0.2))
-                                Image(systemName: "person.crop.circle.fill")
-                                    .font(.system(size: 48))
-                                    .foregroundStyle(.secondary)
+            ZStack {
+                AppScreenBackground()
+
+                ScrollView {
+                    VStack(spacing: 16) {
+                        AsyncImage(url: member.imageURL) { phase in
+                            switch phase {
+                            case .empty:
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 18)
+                                        .fill(AppTheme.sky.opacity(0.18))
+                                    Image(systemName: "person.crop.circle.fill")
+                                        .font(.system(size: 48))
+                                        .foregroundStyle(.secondary)
+                                }
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            case .failure:
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 18)
+                                        .fill(AppTheme.sky.opacity(0.18))
+                                    Image(systemName: "person.crop.circle.badge.exclam")
+                                        .font(.system(size: 48))
+                                        .foregroundStyle(.secondary)
+                                }
+                            @unknown default:
+                                Color.clear
                             }
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFit()
-                        case .failure:
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.gray.opacity(0.2))
-                                Image(systemName: "person.crop.circle.badge.exclam")
-                                    .font(.system(size: 48))
-                                    .foregroundStyle(.secondary)
-                            }
-                        @unknown default:
-                            Color.clear
                         }
-                    }
-                    .frame(height: 300)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .frame(height: 300)
+                        .clipShape(RoundedRectangle(cornerRadius: 18))
+                        .stagedAppear()
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(member.name)
-                            .font(.title2.bold())
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(member.name)
+                                .font(.title2.bold())
+                                .foregroundStyle(AppTheme.ink)
 
-                        Text(member.qualifications)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
+                            Text(member.qualifications)
+                                .font(.headline)
+                                .foregroundStyle(AppTheme.softText)
 
-                        Divider()
+                            Divider()
 
-                        Group {
-                            Text("Phone: \(member.phoneNumber)")
-                            Text("Age: \(calculateAge(from: member.dob)) years")
-                            Text("Department: \(member.department)")
-                            Text("Initial Appointment: \(member.initialAppointmentYear)")
-                            Text("Present Post: \(member.presentPost)")
-                            Text("Present Designation: \(member.presentDesignation)")
-                            Text("PPH: \(member.pph)")
+                            profileLine(title: "Phone", value: member.phoneNumber)
+                            profileLine(title: "Age", value: "\(calculateAge(from: member.dob)) years")
+                            profileLine(title: "Department", value: member.department)
+                            profileLine(title: "Initial Appointment", value: member.initialAppointmentYear)
+                            profileLine(title: "Present Post", value: member.presentPost)
+                            profileLine(title: "Present Designation", value: member.presentDesignation)
+                            profileLine(title: "PPH", value: member.pph)
                         }
-                        .font(.body)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(20)
+                        .appCardStyle()
+                        .stagedAppear(0.08)
+
+                        Button {
+                            expandedMember = nil
+                        } label: {
+                            Text("Close")
+                        }
+                        .buttonStyle(AppPrimaryButtonStyle())
+                        .stagedAppear(0.12)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .background(RoundedRectangle(cornerRadius: 14).fill(Color(.systemBackground)))
-
-                    Button {
-                        expandedMember = nil
-                    } label: {
-                        Text("Close")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.secondary.opacity(0.15))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
                 }
-                .padding()
             }
             .presentationDetents([.large])
         }
@@ -296,32 +302,38 @@ struct Members: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(member.name)
                     .font(.headline)
+                    .foregroundStyle(AppTheme.ink)
                 Text(member.qualifications)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.softText)
                 HStack(spacing: 8) {
                     Label("\(calculateAge(from: member.dob)) yrs", systemImage: "birthday.cake.fill")
                     Label(member.department, systemImage: "building.2")
                 }
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppTheme.accent)
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(AppTheme.accent.opacity(0.65))
         }
         .padding(14)
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.black.opacity(0.06))
-        )
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .appCardStyle()
         .contentShape(Rectangle())
+    }
+
+    private func profileLine(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(AppTheme.accent)
+            Text(value.isEmpty ? "-" : value)
+                .font(.body)
+                .foregroundStyle(AppTheme.ink)
+        }
     }
 }
 
 #Preview {
     Members()
 }
-

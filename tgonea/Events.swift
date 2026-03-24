@@ -12,26 +12,17 @@ struct Events: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)], startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+            AppScreenBackground()
 
             VStack(spacing: 12) {
-                // Header
-                HStack(spacing: 10) {
-                    Image(systemName: "calendar.badge.exclamationmark")
-                        .font(.title2)
-                        .foregroundStyle(.tint)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Persons Retiring This Year")
-                            .font(.headline)
-                        Text("Wishing them the best in their next chapter")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                }
+                AppSectionHeader(
+                    eyebrow: "Milestones",
+                    title: "Persons retiring this year",
+                    subtitle: "Recognising members as they step into their next chapter."
+                )
                 .padding(.horizontal)
-                .padding(.top, 8)
+                .padding(.top, 16)
+                .stagedAppear()
 
                 if vm.members.isEmpty {
                     VStack(spacing: 10) {
@@ -41,9 +32,9 @@ struct Events: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
-                            ForEach(vm.members) { member in
+                            ForEach(Array(vm.members.enumerated()), id: \.element.id) { index, member in
                                 eventCard(member)
-                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                                    .stagedAppear(Double(index) * 0.04 + 0.08)
                             }
                         }
                         .padding(.horizontal)
@@ -73,7 +64,6 @@ struct Events: View {
     @ViewBuilder
     private func eventCard(_ member: UserViewModel.Member) -> some View {
         HStack(alignment: .center, spacing: 12) {
-            // Image
             Group {
                 if let url = member.imageURL {
                     AsyncImage(url: url) { phase in
@@ -81,7 +71,7 @@ struct Events: View {
                         case .empty:
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.gray.opacity(0.2))
+                                    .fill(AppTheme.sky.opacity(0.16))
                                 ProgressView()
                             }
                         case .success(let image):
@@ -91,7 +81,7 @@ struct Events: View {
                         case .failure:
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.gray.opacity(0.2))
+                                    .fill(AppTheme.sky.opacity(0.16))
                                 Image(systemName: "person.crop.rectangle")
                                     .font(.title2)
                                     .foregroundStyle(.secondary)
@@ -99,7 +89,7 @@ struct Events: View {
                         @unknown default:
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.gray.opacity(0.2))
+                                    .fill(AppTheme.sky.opacity(0.16))
                                 Image(systemName: "photo")
                                     .font(.title2)
                                     .foregroundStyle(.secondary)
@@ -109,7 +99,7 @@ struct Events: View {
                 } else {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(AppTheme.sky.opacity(0.16))
                         Image(systemName: "person.crop.rectangle")
                             .font(.title2)
                             .foregroundStyle(.secondary)
@@ -119,30 +109,22 @@ struct Events: View {
             .frame(width: 120, height: 90)
             .clipShape(RoundedRectangle(cornerRadius: 10))
 
-            // Text content
             VStack(alignment: .leading, spacing: 6) {
                 Text(member.name)
                     .font(.headline)
+                    .foregroundStyle(AppTheme.ink)
                 Text(member.department)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.softText)
                 Label("Retiring soon", systemImage: "sparkles")
                     .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.accent)
             }
             Spacer()
         }
         .padding(12)
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.black.opacity(0.06))
-        )
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .appCardStyle()
         .contentShape(Rectangle())
-        .onAppear {
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) { }
-        }
     }
 }
 

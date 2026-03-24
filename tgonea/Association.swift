@@ -16,8 +16,7 @@ struct Association: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient(colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+                AppScreenBackground()
 
                 Group {
                     if let error = vm.errorMessage {
@@ -33,7 +32,7 @@ struct Association: View {
                             }
                             .buttonStyle(.bordered)
                         }
-                        .padding()
+                            .padding()
                     } else if vm.items.isEmpty {
                         VStack(spacing: 12) {
                             ProgressView()
@@ -42,16 +41,27 @@ struct Association: View {
                         }
                     } else {
                         ScrollView {
-                            LazyVStack(spacing: 14) {
-                                ForEach(vm.items) { item in
-                                    Button {
-                                        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                                            expandedItem = item
+                            VStack(spacing: 18) {
+                                AppSectionHeader(
+                                    eyebrow: "Association",
+                                    title: "Moments and messages from the association",
+                                    subtitle: "Browse featured updates with a richer, gallery-style presentation."
+                                )
+                                .padding(.top, 16)
+                                .stagedAppear()
+
+                                LazyVStack(spacing: 14) {
+                                    ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
+                                        Button {
+                                            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                                expandedItem = item
+                                            }
+                                        } label: {
+                                            associationCard(for: item)
                                         }
-                                    } label: {
-                                        associationCard(for: item)
+                                        .buttonStyle(.plain)
+                                        .stagedAppear(Double(index) * 0.04 + 0.08)
                                     }
-                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal)
@@ -66,10 +76,11 @@ struct Association: View {
             }
             .sheet(item: $expandedItem) { item in
                 ZStack {
-                    Color(.black).ignoresSafeArea()
+                    AppTheme.accentDeep.ignoresSafeArea()
                     VStack(spacing: 12) {
                         CachedAsyncImage(url: item.imageURL, contentMode: .fit, cornerRadius: 16)
-                            .frame(maxWidth: .infinity, maxHeight: 420)
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .shadow(color: .black.opacity(0.4), radius: 16, y: 8)
                             .padding()
@@ -102,25 +113,21 @@ struct Association: View {
     private func associationCard(for item: AssociationItem) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             CachedAsyncImage(url: item.imageURL, contentMode: .fill, cornerRadius: 16)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity ,maxHeight: .infinity)
                 .frame(height: 220)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
+                .scaledToFit()
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.black.opacity(0.06))
                 )
             Text(item.description)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppTheme.softText)
                 .lineLimit(3)
         }
         .padding(12)
-        .background(RoundedRectangle(cornerRadius: 18).fill(Color(.systemBackground)))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(Color.black.opacity(0.06))
-        )
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .appCardStyle()
         .contentShape(Rectangle())
     }
 }

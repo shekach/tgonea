@@ -12,6 +12,18 @@ import PhotosUI
 import UIKit
 
 struct Profile: View {
+    private struct SubmittedProfile {
+        let name: String
+        let phoneNumber: String
+        let department: String
+        let dob: Date
+        let qualifications: String
+        let initialAppointmentYear: String
+        let pph: String
+        let presentDesignation: String
+        let presentPost: String
+        let imageData: Data?
+    }
 
     // MARK: - Form Fields
     @State private var name: String = ""
@@ -27,16 +39,24 @@ struct Profile: View {
     @State private var showAlert = false
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
+    @State private var submittedProfile: SubmittedProfile?
 
     @StateObject private var vm = UserViewModel()
     @FocusState private var isFocused: Bool
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)], startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+            AppScreenBackground()
             ScrollView {
                 VStack(spacing: 16) {
+                    AppSectionHeader(
+                        eyebrow: "Profile",
+                        title: "Create and review your member profile",
+                        subtitle: "Fill in your details, submit once, and instantly review the saved information below."
+                    )
+                    .padding(.horizontal)
+                    .padding(.top, 16)
+                    .stagedAppear()
 
                     // MARK: - Profile Header Card
                     VStack(spacing: 14) {
@@ -72,12 +92,7 @@ struct Profile: View {
                             Spacer()
                         }
                         PhotosPicker(selection: $selectedItem, matching: .images) {
-                            Text("Change Photo")
-                                .font(.callout.weight(.semibold))
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
-                                .background(Capsule().fill(Color.accentColor.opacity(0.12)))
-                                .overlay(Capsule().stroke(Color.accentColor.opacity(0.25)))
+                            AppChip(icon: "camera.fill", title: "Change Photo", isActive: true)
                         }
                         .onChange(of: selectedItem) { _, newItem in
                             Task {
@@ -89,47 +104,47 @@ struct Profile: View {
                             }
                         }
                     }
-                    .padding(16)
-                    .background(RoundedRectangle(cornerRadius: 16).fill(.ultraThinMaterial))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.black.opacity(0.06))
-                    )
-                    .shadow(color: .black.opacity(0.06), radius: 10, y: 6)
+                    .padding(20)
+                    .appGlassCardStyle()
                     .padding(.horizontal)
+                    .stagedAppear(0.05)
 
                     // MARK: - Personal Information Card
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Personal Information")
                             .font(.headline)
+                            .foregroundStyle(AppTheme.ink)
                         Group {
                             TextField("Name", text: $name)
-                                .textFieldStyle(.roundedBorder)
                                 .textInputAutocapitalization(.characters)
                                 .focused($isFocused)
+                                .appFieldStyle()
                             TextField("Present Designation in the Departmnet", text: $presentDesignation)
-                                .textFieldStyle(.roundedBorder)
                                 .textInputAutocapitalization(.characters)
                                 .focused($isFocused)
+                                .appFieldStyle()
                             TextField("Present Post held", text: $presentPost)
-                                .textFieldStyle(.roundedBorder)
                                 .textInputAutocapitalization(.characters)
                                 .focused($isFocused)
+                                .appFieldStyle()
                             TextField("Phone Number", text: $phoneNumber)
                                 .keyboardType(.numberPad)
-                                .textFieldStyle(.roundedBorder)
                                 .onChange(of: phoneNumber) { _, newValue in
                                     phoneNumber = String(newValue.filter { $0.isNumber }.prefix(10))
                                 }
+                                .appFieldStyle()
                             DatePicker(
                                 "Date of Birth (as per service book)",
                                 selection: $dob,
                                 displayedComponents: [.date]
                             )
+                            .appFieldStyle()
                             TextField("Qualifications", text: $qualifications)
-                                .textFieldStyle(.roundedBorder)
+                                .appFieldStyle()
                             if vm.department.isEmpty {
                                 ProgressView("Loading departments…")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .appFieldStyle()
                             } else {
                                 Picker("Department", selection: $department) {
                                     Text("Select").tag("")
@@ -138,9 +153,12 @@ struct Profile: View {
                                     }
                                 }
                                 .pickerStyle(.menu)
+                                .appFieldStyle()
                             }
                             if vm.initialAppointmentYear.isEmpty {
                                 ProgressView("Loading…")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .appFieldStyle()
                             } else {
                                 Picker("Intial year of appoinment in Group-1 service", selection: $initialAppointmentYear) {
                                     Text("Select").tag("")
@@ -149,34 +167,34 @@ struct Profile: View {
                                     }
                                 }
                                 .pickerStyle(.menu)
+                                .appFieldStyle()
                                 ZStack(alignment: .topLeading) {
                                     if pph.isEmpty {
                                         Text("Previous Posts held")
-                                            .foregroundColor(.secondary)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 8)
+                                            .foregroundColor(AppTheme.softText)
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 14)
                                     }
                                     TextEditor(text: $pph)
                                         .textInputAutocapitalization(.sentences)
+                                        .scrollContentBackground(.hidden)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 8)
                                 }
                                 .font(.custom("HelveticaNeue", size: 13))
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(AppTheme.ink)
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, minHeight: 100)
                                 .lineSpacing(6)
-                                .padding(8)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+                                .background(Color.clear)
+                                .appFieldStyle()
                             }
                         }
                     }
-                    .padding(16)
-                    .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemBackground)))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.black.opacity(0.06))
-                    )
-                    .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+                    .padding(20)
+                    .appCardStyle()
                     .padding(.horizontal)
+                    .stagedAppear(0.10)
 
                     // MARK: - Submit Button Card
                     VStack(alignment: .center) {
@@ -186,24 +204,23 @@ struct Profile: View {
                                 Text("Submit Application")
                                     .fontWeight(.semibold)
                             }
-                            .padding(.horizontal, 18)
-                            .padding(.vertical, 12)
-                            .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.accentColor)
+                        .buttonStyle(AppPrimaryButtonStyle())
                         .disabled(!isFormValid)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
+                        .opacity(isFormValid ? 1 : 0.55)
                     }
-                    .padding(16)
-                    .background(RoundedRectangle(cornerRadius: 16).fill(.ultraThinMaterial))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.black.opacity(0.06))
-                    )
+                    .padding(20)
+                    .appGlassCardStyle()
                     .padding(.horizontal)
                     .padding(.bottom, 24)
+                    .stagedAppear(0.15)
+
+                    if let submittedProfile {
+                        submittedInfoCard(for: submittedProfile)
+                            .padding(.horizontal)
+                            .padding(.bottom, 24)
+                            .stagedAppear(0.20)
+                    }
                 }
             }
         }
@@ -225,6 +242,68 @@ struct Profile: View {
         
     }
 
+    @ViewBuilder
+    private func submittedInfoCard(for profile: SubmittedProfile) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Submitted Information")
+                .font(.headline)
+
+            HStack(alignment: .center, spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(.thinMaterial)
+                        .frame(width: 76, height: 76)
+
+                    if let data = profile.imageData, let image = UIImage(data: data) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 72, height: 72)
+                            .clipShape(Circle())
+                    } else {
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 72, height: 72)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(profile.name)
+                        .font(.title3.weight(.semibold))
+                    Text(profile.department)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+
+            submittedInfoRow(title: "Present Designation", value: profile.presentDesignation)
+            submittedInfoRow(title: "Present Post", value: profile.presentPost)
+            submittedInfoRow(title: "Phone Number", value: profile.phoneNumber)
+            submittedInfoRow(title: "Date of Birth", value: Self.displayDateFormatter.string(from: profile.dob))
+            submittedInfoRow(title: "Qualifications", value: profile.qualifications)
+            submittedInfoRow(title: "Initial Appointment Year", value: profile.initialAppointmentYear)
+            submittedInfoRow(title: "Previous Posts Held", value: profile.pph)
+        }
+        .padding(20)
+        .appCardStyle()
+    }
+
+    @ViewBuilder
+    private func submittedInfoRow(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(AppTheme.accent)
+            Text(value.isEmpty ? "-" : value)
+                .font(.body)
+                .foregroundStyle(AppTheme.ink)
+        }
+    }
+
     // MARK: - Form Validation
     private var isFormValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty &&
@@ -236,6 +315,18 @@ struct Profile: View {
 
     // MARK: - Submit Profile
     private func submitProfile() {
+        let submittedSnapshot = SubmittedProfile(
+            name: name,
+            phoneNumber: phoneNumber,
+            department: department,
+            dob: dob,
+            qualifications: qualifications,
+            initialAppointmentYear: initialAppointmentYear,
+            pph: pph,
+            presentDesignation: presentDesignation,
+            presentPost: presentPost,
+            imageData: selectedImageData
+        )
 
         let db = Firestore.firestore()
 
@@ -271,6 +362,7 @@ struct Profile: View {
                     print("Failed to add user document: \(error.localizedDescription)")
                 }
                 DispatchQueue.main.async {
+                    submittedProfile = submittedSnapshot
                     resetForm()
                     showAlert = true   // ✅ ALERT FIRES HERE
                 }
@@ -316,6 +408,12 @@ struct Profile: View {
         presentPost = ""
         initialAppointmentYear = ""
     }
+
+    private static let displayDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter
+    }()
 }
 
 #Preview {
@@ -323,4 +421,3 @@ struct Profile: View {
         Profile()
     }
 }
-

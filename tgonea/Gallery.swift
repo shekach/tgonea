@@ -16,8 +16,7 @@ struct Gallery: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient(colors: [Color(.systemGroupedBackground), Color(.secondarySystemGroupedBackground)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+                AppScreenBackground()
 
                 Group {
                     if let error = vm.errorMessage {
@@ -33,7 +32,7 @@ struct Gallery: View {
                             }
                             .buttonStyle(.bordered)
                         }
-                        .padding()
+                            .padding()
                     } else if vm.items.isEmpty {
                         VStack(spacing: 12) {
                             ProgressView()
@@ -42,16 +41,27 @@ struct Gallery: View {
                         }
                     } else {
                         ScrollView {
-                            LazyVStack(spacing: 16) {
-                                ForEach(vm.items) { item in
-                                    Button {
-                                        withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
-                                            expandedItem = item
+                            VStack(spacing: 18) {
+                                AppSectionHeader(
+                                    eyebrow: "Gallery",
+                                    title: "A more vivid view of association moments",
+                                    subtitle: "Tap any image for an expanded full-screen presentation."
+                                )
+                                .padding(.top, 16)
+                                .stagedAppear()
+
+                                LazyVStack(spacing: 16) {
+                                    ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
+                                        Button {
+                                            withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                                expandedItem = item
+                                            }
+                                        } label: {
+                                            galleryCard(for: item)
                                         }
-                                    } label: {
-                                        galleryCard(for: item)
+                                        .buttonStyle(.plain)
+                                        .stagedAppear(Double(index) * 0.04 + 0.08)
                                     }
-                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal)
@@ -66,7 +76,7 @@ struct Gallery: View {
             }
             .sheet(item: $expandedItem) { item in
                 ZStack {
-                    Color.black.ignoresSafeArea()
+                    AppTheme.accentDeep.ignoresSafeArea()
                     VStack(spacing: 12) {
                         AsyncImage(url: item.imageURL) { phase in
                             switch phase {
@@ -142,16 +152,11 @@ struct Gallery: View {
 
             Text(item.description)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppTheme.softText)
                 .lineLimit(3)
         }
         .padding(12)
-        .background(RoundedRectangle(cornerRadius: 18).fill(Color(.systemBackground)))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(Color.black.opacity(0.06))
-        )
-        .shadow(color: .black.opacity(0.05), radius: 8, y: 4)
+        .appCardStyle()
         .contentShape(Rectangle())
     }
 }

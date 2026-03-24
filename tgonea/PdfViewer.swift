@@ -6,8 +6,18 @@ struct PdfViewer: View {
     let url: URL
 
     var body: some View {
-        PDFKitView(url: url)
-            .ignoresSafeArea()
+        ZStack {
+            AppScreenBackground()
+
+            PDFKitView(url: url)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(AppTheme.border, lineWidth: 1)
+                )
+                .shadow(color: AppTheme.shadow, radius: 18, y: 12)
+                .padding()
+        }
     }
 }
 
