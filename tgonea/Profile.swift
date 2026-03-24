@@ -23,6 +23,7 @@ struct Profile: View {
         let presentDesignation: String
         let presentPost: String
         let imageData: Data?
+        let bloodGroup: String
     }
 
     // MARK: - Form Fields
@@ -42,7 +43,7 @@ struct Profile: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
     @State private var submittedProfile: SubmittedProfile?
-
+    @State private var bloodGroup: String = ""
     @StateObject private var vm = UserViewModel()
     @FocusState private var isFocused: Bool
 
@@ -94,7 +95,7 @@ struct Profile: View {
                             Spacer()
                         }
                         PhotosPicker(selection: $selectedItem, matching: .images) {
-                            AppChip(icon: "camera.fill", title: "Change Photo", isActive: true)
+                            AppChip(icon: "camera.fill", title: "Upload Photo", isActive: true)
                         }
                         .onChange(of: selectedItem) { _, newItem in
                             Task {
@@ -121,6 +122,12 @@ struct Profile: View {
                                 .textInputAutocapitalization(.characters)
                                 .focused($isFocused)
                                 .appFieldStyle()
+                            TextField("bloodGroup", text: $bloodGroup)
+                                .textInputAutocapitalization(.characters)
+                                .focused($isFocused)
+                                .appFieldStyle()
+                                
+                                
                             TextField("Present Designation in the Departmnet", text: $presentDesignation)
                                 .textInputAutocapitalization(.characters)
                                 .focused($isFocused)
@@ -281,6 +288,8 @@ struct Profile: View {
             }
 
             submittedInfoRow(title: "Present Designation", value: profile.presentDesignation)
+            submittedInfoRow(title: "blood group", value: profile.bloodGroup)
+            
             submittedInfoRow(title: "Present Post", value: profile.presentPost)
             submittedInfoRow(title: "Phone Number", value: profile.phoneNumber)
             submittedInfoRow(title: "Date of Birth", value: Self.displayDateFormatter.string(from: profile.dob))
@@ -310,8 +319,16 @@ struct Profile: View {
             return "Please add a profile photo."
         }
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            
             return "Please enter your name."
         }
+        
+        if bloodGroup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Please enter your blood group"
+            
+            }
+        
+        
         if presentDesignation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "Please enter your present designation."
         }
@@ -350,6 +367,7 @@ struct Profile: View {
 
         let submittedSnapshot = SubmittedProfile(
             name: name,
+            bloodGroup: bloodGroup,
             phoneNumber: phoneNumber,
             department: department,
             dob: dob,
@@ -373,6 +391,7 @@ struct Profile: View {
 
             var data: [String: Any] = [
                 "name": name,
+                "bloodGroup": bloodGroup,
                 "phoneNumber": phoneNumber,
                 "department": department,
                 "qualifications": qualifications,
@@ -436,6 +455,7 @@ struct Profile: View {
     // MARK: - Reset Form
     private func resetForm() {
         name = ""
+        bloodGroup = ""
         phoneNumber = ""
         department = ""
         dob = Date()
