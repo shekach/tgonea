@@ -46,6 +46,7 @@ struct Profile: View {
     @State private var bloodGroup: String = ""
     @StateObject private var vm = UserViewModel()
     @FocusState private var isFocused: Bool
+    @State private var animate = false
 
     var body: some View {
         ZStack {
@@ -156,7 +157,7 @@ struct Profile: View {
                                     .appFieldStyle()
                             } else {
                                 Picker("Department", selection: $department) {
-                                    Text("Select").tag("")
+                                    Text("Select Department").tag("")
                                     ForEach(vm.department, id: \.self) { dept in
                                         Text(dept).tag(dept)
                                     }
@@ -170,7 +171,7 @@ struct Profile: View {
                                     .appFieldStyle()
                             } else {
                                 Picker("Intial year of appoinment in Group-1 service", selection: $initialAppointmentYear) {
-                                    Text("Select").tag("")
+                                    Text("Select Initial Year of appointment in Group1 ").tag("")
                                     ForEach(vm.initialAppointmentYear, id: \.self) { initialAppointmentYear in
                                         Text(initialAppointmentYear).tag(initialAppointmentYear)
                                     }
@@ -207,7 +208,12 @@ struct Profile: View {
 
                     // MARK: - Submit Button Card
                     VStack(alignment: .center) {
-                        Button(action: { submitProfile() }) {
+                        Button(action: {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                                animate.toggle()
+                            }
+                            submitProfile()
+                        }) {
                             HStack(spacing: 10) {
                                 Image(systemName: "paperplane.fill")
                                 Text("Submit Application")
@@ -367,7 +373,6 @@ struct Profile: View {
 
         let submittedSnapshot = SubmittedProfile(
             name: name,
-            bloodGroup: bloodGroup,
             phoneNumber: phoneNumber,
             department: department,
             dob: dob,
@@ -376,7 +381,8 @@ struct Profile: View {
             pph: pph,
             presentDesignation: presentDesignation,
             presentPost: presentPost,
-            imageData: selectedImageData
+            imageData: selectedImageData,
+            bloodGroup: bloodGroup
         )
 
         let db = Firestore.firestore()
@@ -481,3 +487,4 @@ struct Profile: View {
         Profile()
     }
 }
+

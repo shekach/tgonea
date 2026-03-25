@@ -178,9 +178,9 @@ struct Members: View {
                             Text(member.qualifications)
                                 .font(.headline)
                                 .foregroundStyle(AppTheme.softText)
-
+                            
                             Divider()
-
+                            profileLine(title: "Blood Group", value: member.bloodGroup)
                             profileLine(title: "Phone", value: member.phoneNumber)
                             profileLine(title: "Age", value: "\(calculateAge(from: member.dob)) years")
                             profileLine(title: "Department", value: member.department)
